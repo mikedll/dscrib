@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DScrib2;
 using AngleSharp.Parser.Html;
+using System.Text.RegularExpressions;
 
 namespace Tester
 {
@@ -28,16 +29,7 @@ namespace Tester
 
         static void Main(string[] args)
         {
-            var parser = new HtmlParser();
-            var doc = parser.Parse(GetDataLocal());
-            var items = doc.QuerySelectorAll(".s-result-list .s-result-item");
-            foreach(var item in items)
-            {
-                var name = item.QuerySelector("h2");
-                Console.WriteLine("Item: {0}", name.TextContent);
-            }
-            // System.IO.File.WriteAllText(@"output.html", body);
-            
+            Console.WriteLine("Booting...");
         }
     }
 }
