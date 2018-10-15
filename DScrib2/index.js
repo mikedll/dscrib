@@ -23,7 +23,10 @@ var Explorer = Backbone.View.extend({
       console.log("submitted with " + e.target.value)
 
       $.get({
-        url: 'https://www.amazon.com/robots.txt',
+        url: '/search',
+        data: {
+          q: e.target.value
+        },
         success: _.bind(function(data) {
           this.results = data
           this.render()
