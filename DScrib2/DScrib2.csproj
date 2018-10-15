@@ -96,14 +96,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HomeController.cs" />
+    <Compile Include="SearchController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RouteConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Index.cshtml" />
+    <Content Include="Views\Unused.cshtml" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
