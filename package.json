@@ -1,0 +1,22 @@
+{
+  "name": "dscrib2",
+  "version": "1.0.0",
+  "description": "App for searching Amazon via reviews.",
+  "main": "none",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikedll/dscrib2.git"
+  },
+  "author": "Michael Rivera",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mikedll/dscrib2/issues"
+  },
+  "homepage": "https://github.com/mikedll/dscrib2#readme",
+  "dependencies": {
+    "htmltidy2": "^0.3.0"
+  }
+}
