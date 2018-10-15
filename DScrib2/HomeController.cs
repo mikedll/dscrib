@@ -8,9 +8,9 @@ namespace DScrib2
 {
     public class HomeController : Controller
     {
-        public string Index()
+        public ActionResult Index()
         {
-            return "I've got you!";
+            return View("~/Index.cshtml");
         }
     }
 }
