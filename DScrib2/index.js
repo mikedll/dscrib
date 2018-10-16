@@ -20,7 +20,11 @@ var Product = Backbone.Model.extend({
       },
       dataType: 'JSON',
       success: _.bind(function (data) {
-        var review = _.extend({}, data, { 'reviewDate': moment(data.reviewDate).format('MMMM Do YYYY') })
+        var review;
+        if (data === null) {
+          review = {reviewDate: 'n/a', review: '(unable to retrieve)'}
+        }
+        review = _.extend({}, data, { 'reviewDate': moment(data.reviewDate).format('MMMM Do YYYY') })
         this.set({ 'review': review })
       }, this),
       complete: _.bind(function () {

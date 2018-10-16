@@ -68,7 +68,15 @@ namespace DScrib2
                 {
                     body += Encoding.UTF8.GetString(buf, 0, n);
                     offset += n;
-                    n = str.Read(buf, 0, buf.Length);
+                    try
+                    {
+                        n = str.Read(buf, 0, buf.Length);
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        // Might have been a connection closed error.
+                        break;
+                    }
                 }
             }
             return body;
