@@ -11,24 +11,13 @@ namespace Tester
 {
     class Program
     {
-        private static string GetDataRemote()
-        {
-            var controller = new SearchController();
-            return controller.HitAmazon();
-        }
-
-        private static string GetDataLocal()
-        {
-            var body = "";
-            using (var sr = new System.IO.StreamReader("output.html", Encoding.UTF8))
-            {
-                body += sr.ReadToEnd();
-            }
-            return body;
-        }
 
         static void Main(string[] args)
         {
+            var c2 = new SearchController();
+            var body = c2.GetDataLocal();
+            c2.ExtractProductInfo(body);
+
             Console.WriteLine("Booting...");
         }
     }

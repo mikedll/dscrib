@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -12,31 +13,43 @@ namespace DScrib2
 {
     public class SearchController : Controller
     {
-        private string ParseResults(string body)
+        public string GetDataLocal()
         {
-            var urlRegex = @"(http(s)?://www.amazon.com/[^/]+/dp/[^/]+/)";
-            // Reviews look like this: https://www.amazon.com/Eucalan-Lavender-Fine-Fabric-Ounce/product-reviews/B001DEJMPG/
+            var body = "";
+            using (var sr = new System.IO.StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output.html"), Encoding.UTF8))
+            {
+                body += sr.ReadToEnd();
+            }
+            return body;
+        }
 
+
+        public List<Tuple<string, string, string>> ExtractProductInfo(string body)
+        {
             var parser = new HtmlParser();
             var doc = parser.Parse(body);
             var items = doc.QuerySelectorAll(".s-result-list .a-link-normal.s-access-detail-page");
             var n = items.Count();
-            Console.WriteLine("Found {0} items.", n);
+
+            var results = new List<Tuple<string, string, string>>();
+            // Products look like this: https://www.amazon.com/Sandalwood-Patchouli-Different-Scents-Karma/dp/B06Y274RR8/
+            // Reviews look like this: https://www.amazon.com/Eucalan-Lavender-Fine-Fabric-Ounce/product-reviews/B001DEJMPG/
+            var productUrlRegex = new Regex(@"http(s)?://www.amazon.com/([^/]+)/dp/([^/]+)/", RegexOptions.Compiled);
             foreach (var item in items)
             {
                 var link = item.GetAttribute("href");
                 var name = item.QuerySelector("h2").TextContent;
 
-                var match = new Regex(urlRegex, RegexOptions.Compiled).Match(link);
+                var match = productUrlRegex.Match(link);
 
-                var simpleUrl = "";
-                if (match != null)
+                if (match.Success)
                 {
-                    simpleUrl = match.Value;
+                    results.Add(new Tuple<string, string, string>(name, match.Groups[2].Value, match.Groups[3].Value));
                 }
             }
-            return "";
+            return results;
         }
+
         public string HitAmazon()
         {
             var s = "https://www.amazon.com/s/?field-keywords=nice+smelling+soap";
@@ -62,9 +75,10 @@ namespace DScrib2
 
         public ActionResult Index(string q)
         {
-            var res = HitAmazon();
-            var results = new List<string>() { $"fake{q}result1", "result2", "result3", "Amazon started off with: " + res.Substring(0, 10) };
-            return Json(results, JsonRequestBehavior.AllowGet);
+            return Json(ExtractProductInfo(GetDataLocal()).Select(v => new Dictionary<string, string>(){
+                { "name", v.Item1 },
+                { "linkSlug", v.Item2 },
+                { "productID", v.Item3 }}), JsonRequestBehavior.AllowGet);
         }
     }
 }
