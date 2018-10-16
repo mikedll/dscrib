@@ -16,7 +16,7 @@ namespace Tester
         static void Main(string[] args)
         {
             var sc = new AmazonWebClient();
-            sc.IsTestMode = true;
+
             var body = sc.GetTestReview(); // sc.GetReviewPage("Sandalwood-Patchouli-Different-Scents-Karma", "B06Y274RR8");
 
             if(body == null)
