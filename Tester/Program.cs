@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DScrib2;
 using AngleSharp.Parser.Html;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace Tester
 {
@@ -14,11 +15,24 @@ namespace Tester
 
         static void Main(string[] args)
         {
-            var c2 = new SearchController();
-            var body = c2.GetDataLocal();
-            c2.ExtractProductInfo(body);
+            var sc = new AmazonWebClient();
+            sc.IsTestMode = true;
+            var body = sc.GetTestReview(); // sc.GetReviewPage("Sandalwood-Patchouli-Different-Scents-Karma", "B06Y274RR8");
 
-            Console.WriteLine("Booting...");
+            if(body == null)
+            {
+                Console.WriteLine("Got null response from GetReviewPage.");
+                return;
+            }
+
+            var review = sc.GetReviewPage("Eucalan-Lavender-Fine-Fabric-Ounce", "B001DEJMPG");
+            Console.WriteLine(review.Item1);
+            Console.WriteLine(review.Item2);
+            //var destFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sample-review.html");
+            //Console.WriteLine($"Writing {body.Length} characters to {AppDomain.CurrentDomain.BaseDirectory}");
+            //System.IO.File.WriteAllText(destFile, body, Encoding.UTF8);
+
+            Console.WriteLine("Finished.");
         }
     }
 }

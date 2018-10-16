@@ -101,6 +101,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AmazonWebClient.cs" />
     <Compile Include="SearchController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
