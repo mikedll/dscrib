@@ -1,27 +1,39 @@
-
+﻿
 var KeyCodes = {
   ENTER: 13
 }
 
 var Product = Backbone.Model.extend({
   view: null,
-  sassy: false,
-
-  turnSassy: function () {
-    this.set({ sassy: true });
-  },
-
-  reviewShort: function () {
-    var r = this.get('review');
-    if (typeof(r) === 'undefined' || r.length === 0) return "";
-
-    return r.substr(0, Math.min(r.length, 10)) + ((r.length > 10) ? "�" : '');
-  },
+  busy: false,
 
   // id (from link), name, link-pretty-part (pretty part, ID part), a review
   // id may eventually come from our database.
   fetchReview: function () {
-    console.log("getReview called.")
+    if (this.busy || typeof(this.get('review')) !== 'undefined') return;
+    this.busy = true;
+    $.get({
+      url: '/reviews',
+      data: {
+        linkSlug: this.get('linkSlug'),
+        productID: this.get('productID')
+      },
+      dataType: 'JSON',
+      success: _.bind(function (data) {
+        var review = _.extend({}, data, { 'reviewDate': moment(data.reviewDate).format('MMMM Do YYYY, h:mm a') })
+        this.set({ 'review': review })
+      }, this),
+      complete: _.bind(function () {
+        this.busy = false
+      }, this)
+    })
+  },
+
+  reviewShort: function () {
+    var r = this.get('review');
+    if (typeof(r) === 'undefined' || r.review.length === 0) return "";
+
+    return r.review.substr(0, Math.min(r.review.length, 10)) + ((r.review.length > 10) ? "…" : '');
   },
 
   getView: function () {
@@ -38,7 +50,7 @@ var ProductView = Backbone.View.extend({
   renderCount: 0,
 
   events: {
-    'click': 'sassify'
+    'click': 'getReview'
   },
 
   initialize: function () {
@@ -46,20 +58,15 @@ var ProductView = Backbone.View.extend({
     this.listenTo(this.model, 'change', this.onChange)
   },
 
+  getReview: function () { this.model.fetchReview(); },
+
   onChange: function () {
     this.render()
   },
 
-  sassify: function () { this.model.turnSassy(); },
-
   render: function () {
-
     this.$el.empty()
-    if (this.model.get('sassy')) {
-      this.$el.append($('<td colspan="2"> count=' + this.renderCount + ': ' + 'LOL!</td>'))
-    } else {
-      this.$el.append($('<td> count=' + this.renderCount + ': ' + this.model.get('name') + '</td><td> ' + this.model.reviewShort() + '</td > '))
-    }
+    this.$el.append($('<td> count=' + this.renderCount + ': ' + this.model.get('name') + '</td><td> ' + this.model.reviewShort() + '</td > '))
     this.renderCount++;
     return this
   }
@@ -105,6 +112,7 @@ var Explorer = Backbone.View.extend({
         data: {
           q: e.target.value
         },
+        dataType: 'JSON',
         success: _.bind(function (data) {
           this.searching = false
           this.results.reset(data);
@@ -125,9 +133,12 @@ var Explorer = Backbone.View.extend({
 
     var tbody = table.find('tbody')
     if (this.results.length > 0) {
+      var found = 0
       this.results.each(function (pi) {
+        found += 1
         tbody.append(pi.getView().el)
       });
+      console.log("I think I added " + found + " records' views to the root view.")
     } else if (this.searching) {
       tbody.append($('<tr><td colspan="2">Searching...</td></tr>'));
     }

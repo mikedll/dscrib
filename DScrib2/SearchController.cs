@@ -24,7 +24,7 @@ namespace DScrib2
         {
             return Json(client.Search(q).Select(v => new Dictionary<string, string>(){
                 { "name", v.Item1 },
-                { "link_slug", v.Item2 },
+                { "linkSlug", v.Item2 },
                 { "productID", v.Item3 }}), JsonRequestBehavior.AllowGet);
         }
     }

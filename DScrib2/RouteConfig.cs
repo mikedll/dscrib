@@ -21,7 +21,7 @@ namespace DScrib2
 
             routes.MapRoute(
                 name: "Review",
-                url: "review",
+                url: "reviews",
                 defaults: new { controller = "Search", action = "Review" }
             );
         }
