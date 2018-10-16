@@ -27,6 +27,13 @@ var Product = Backbone.Model.extend({
         review = _.extend({}, data, { 'reviewDate': moment(data.reviewDate).format('MMMM Do YYYY') })
         this.set({ 'review': review })
       }, this),
+      error: _.bind(function (jqXhr, textStatus, errorThrown) {
+        // Unusual, null review fetched.
+        if (jqXhr.status === 200) {
+          review = { reviewDate: 'n/a', review: '(unable to retrieve)' }
+          this.set({ 'review': review })
+        }
+      }, this),
       complete: _.bind(function () {
         this.busy = false
       }, this)

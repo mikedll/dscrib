@@ -17,7 +17,7 @@ namespace DScrib2
         public ActionResult Review(string linkSlug, string productID)
         {
             var result = client.GetReviewPage(linkSlug, productID);
-            if (result == null) return Json(null);
+            if (result == null) return Json(null, JsonRequestBehavior.AllowGet);
             return Json(new { reviewDate = result.Item1, review = result.Item2 }, JsonRequestBehavior.AllowGet);
         }
 
