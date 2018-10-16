@@ -34,12 +34,12 @@ namespace DScrib2
 
         public string GetTestSearch()
         {
-            return ReadFile("output.html");
+            return ReadFile("output.txt");
         }
 
         public string GetTestReview()
         {
-            return ReadFile("sample-review.html");
+            return ReadFile("sample-review.txt");
         }
 
         private string GetPage(string url)
