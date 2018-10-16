@@ -3,16 +3,70 @@ var KeyCodes = {
   ENTER: 13
 }
 
-var ProductInfo = Backbone.Model.extend({
+var Product = Backbone.Model.extend({
+  view: null,
+  sassy: false,
+
+  turnSassy: function () {
+    this.set({ sassy: true });
+  },
+
+  reviewShort: function () {
+    var r = this.get('review');
+    if (typeof(r) === 'undefined' || r.length === 0) return "";
+
+    return r.substr(0, Math.min(r.length, 10)) + ((r.length > 10) ? "…" : '');
+  },
+
   // id (from link), name, link-pretty-part (pretty part, ID part), a review
   // id may eventually come from our database.
-  getReview: function () {
+  fetchReview: function () {
     console.log("getReview called.")
+  },
+
+  getView: function () {
+    if (this.view === null) {
+      this.view = new ProductView({ model: this }).render()
+    }
+
+    return this.view;
+  }
+})
+
+var ProductView = Backbone.View.extend({
+  tagName: 'tr',
+  renderCount: 0,
+
+  events: {
+    'click': 'sassify'
+  },
+
+  initialize: function () {
+    Backbone.View.prototype.initialize.apply(this, arguments);
+    this.listenTo(this.model, 'change', this.onChange)
+  },
+
+  onChange: function () {
+    this.render()
+  },
+
+  sassify: function () { this.model.turnSassy(); },
+
+  render: function () {
+
+    this.$el.empty()
+    if (this.model.get('sassy')) {
+      this.$el.append($('<td colspan="2"> count=' + this.renderCount + ': ' + 'LOL!</td>'))
+    } else {
+      this.$el.append($('<td> count=' + this.renderCount + ': ' + this.model.get('name') + '</td><td> ' + this.model.reviewShort() + '</td > '))
+    }
+    this.renderCount++;
+    return this
   }
 })
 
 var Products = Backbone.Collection.extend({
-  model: ProductInfo
+  model: Product
 })
 
 var Explorer = Backbone.View.extend({
@@ -59,24 +113,28 @@ var Explorer = Backbone.View.extend({
     }
   },
 
-  render: function() {
-    var html = ''
-    html += '<input type="text" name="search" placeholder="Product to Search For"  value="alexa"/>'
+  render: function () {
+    var searchBox = $('<input type="text" name="search" placeholder="Product to Search For"  value="alexa"/>')
 
-    var tableEls = "<table class='table table-bordered'><thead>";
-    tableEls += '<tr><th>Product</th><th>...dunno</th></tr>';
-    tableEls += '</thead><tbody>';
+    var table = $(
+      "<table class='table table-bordered'><thead>"
+      + '<tr><th>Product</th><th>...dunno</th></tr>'
+      + '</thead><tbody>'
+      + '</tbody></table >'
+    );
+
+    var tbody = table.find('tbody')
     if (this.results.length > 0) {
-      tableEls += this.results.map(function (pi) {
-        return '<tr><td>' + pi.get('name') + '</td><td></td></tr>';
-      }).join('');
+      this.results.each(function (pi) {
+        tbody.append(pi.getView().el)
+      });
     } else if (this.searching) {
-      tableEls += '<tr><td colspan="2">Searching...</td></tr>'
+      tbody.append($('<tr><td colspan="2">Searching...</td></tr>'));
     }
-    tableEls += '</tbody></table >';
-    html += tableEls;
-    
-    this.$el.html(html)
+
+    this.$el.empty()
+    this.$el.append(searchBox)
+    this.$el.append(table)
     return this
   },
 
