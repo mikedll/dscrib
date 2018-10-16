@@ -47,7 +47,6 @@ var Product = Backbone.Model.extend({
 
 var ProductView = Backbone.View.extend({
   tagName: 'tr',
-  renderCount: 0,
 
   events: {
     'click': 'getReview'
@@ -66,8 +65,13 @@ var ProductView = Backbone.View.extend({
 
   render: function () {
     this.$el.empty()
-    this.$el.append($('<td> count=' + this.renderCount + ': ' + this.model.get('name') + '</td><td> ' + this.model.reviewShort() + '</td > '))
-    this.renderCount++;
+    if (typeof(this.model.get('review')) !== 'undefined') {
+      this.$el.append($('<td><span class="product-name">' + this.model.get('name') + '</span><br/> ' + this.model.get('review').review + '</td><td>' + this.model.get('review').reviewDate + '</td>'))
+    } else {
+      this.$el.append($('<td>' + this.model.get('name') + '</td><td></td>'))
+    }
+
+    this.$el.append($('<td><a href="https://www.amazon.com/' + this.model.get('linkSlug') + "/dp/" + this.model.get('productID') + '" target="_blank">Visit</a>'))
     return this
   }
 })
@@ -126,7 +130,7 @@ var Explorer = Backbone.View.extend({
 
     var table = $(
       "<table class='table table-bordered'><thead>"
-      + '<tr><th>Product</th><th>...dunno</th></tr>'
+      + '<tr><th>Product</th><th>Review Date</th><th>Link</th></tr>'
       + '</thead><tbody>'
       + '</tbody></table >'
     );
@@ -140,7 +144,7 @@ var Explorer = Backbone.View.extend({
       });
       console.log("I think I added " + found + " records' views to the root view.")
     } else if (this.searching) {
-      tbody.append($('<tr><td colspan="2">Searching...</td></tr>'));
+      tbody.append($('<tr><td colspan="3">Searching...</td></tr>'));
     }
 
     this.$el.empty()
