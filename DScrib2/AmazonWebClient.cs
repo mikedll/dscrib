@@ -103,7 +103,7 @@ namespace DScrib2
                 var reviewDateStr = dateEl.TextContent;
                 if (reviewDateStr.StartsWith("on ")) {
                     CultureInfo enUs = new CultureInfo("en-US");
-                    if (!DateTime.TryParseExact(reviewDateStr.Substring(3), "MMM d, yyyy", enUs, DateTimeStyles.None, out reviewDate))
+                    if (!DateTime.TryParseExact(reviewDateStr.Substring(3), "MMMM d, yyyy", enUs, DateTimeStyles.None, out reviewDate))
                     {
                         reviewDate = DateTime.Now;
                     }
