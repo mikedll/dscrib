@@ -23,6 +23,7 @@ var Explorer = Backbone.View.extend({
   },
 
   search: "",
+  searching: false,
   results: new Products(),
 
   initialize: function (options) {
@@ -42,14 +43,16 @@ var Explorer = Backbone.View.extend({
   onKeyUp: function(e) {    
     if(e.keyCode === KeyCodes.ENTER) {
       e.preventDefault()
-      console.log("submitted with " + e.target.value)
 
+      this.searching = true
+      this.results.reset()
       $.get({
         url: '/search',
         data: {
           q: e.target.value
         },
-        success: _.bind(function(data) {
+        success: _.bind(function (data) {
+          this.searching = false
           this.results.reset(data);
         }, this)
       })
@@ -60,16 +63,18 @@ var Explorer = Backbone.View.extend({
     var html = ''
     html += '<input type="text" name="search" placeholder="Product to Search For"  value="alexa"/>'
 
+    var tableEls = "<table class='table table-bordered'><thead>";
+    tableEls += '<tr><th>Product</th><th>...dunno</th></tr>';
+    tableEls += '</thead><tbody>';
     if (this.results.length > 0) {
-      var tableEls = "<table class='table table-bordered'><thead>";
-      tableEls += '<tr><th>Product</th><th>...dunno</th></tr>';
-      tableEls += '</thead><tbody>';
       tableEls += this.results.map(function (pi) {
         return '<tr><td>' + pi.get('name') + '</td><td></td></tr>';
       }).join('');
-      tableEls += '</tbody></table >';
-      html += tableEls;
+    } else if (this.searching) {
+      tableEls += '<tr><td colspan="2">Searching...</td></tr>'
     }
+    tableEls += '</tbody></table >';
+    html += tableEls;
     
     this.$el.html(html)
     return this

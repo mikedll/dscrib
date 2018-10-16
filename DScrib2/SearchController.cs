@@ -50,9 +50,10 @@ namespace DScrib2
             return results;
         }
 
-        public string HitAmazon()
+        public string HitAmazon(string q)
         {
-            var s = "https://www.amazon.com/s/?field-keywords=nice+smelling+soap";
+            const int MaxSize = 200;
+            var s = "https://www.amazon.com/s/?field-keywords=" + Uri.EscapeDataString(q.Substring(0, Math.Min(q.Length, MaxSize)));
             var request = (HttpWebRequest)WebRequest.Create(s);
             var response = request.GetResponse();
 
@@ -75,7 +76,7 @@ namespace DScrib2
 
         public ActionResult Index(string q)
         {
-            return Json(ExtractProductInfo(GetDataLocal()).Select(v => new Dictionary<string, string>(){
+            return Json(ExtractProductInfo(HitAmazon(q)).Select(v => new Dictionary<string, string>(){
                 { "name", v.Item1 },
                 { "linkSlug", v.Item2 },
                 { "productID", v.Item3 }}), JsonRequestBehavior.AllowGet);
