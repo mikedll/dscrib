@@ -30,6 +30,11 @@ namespace DScrib2
                 url: "reviews",
                 defaults: new { controller = "Search", action = "Review" }
             );
+
+            routes.MapRoute(
+                name: "Defaults",
+                url: "{controller}/{action}"
+            );
         }
     }
 

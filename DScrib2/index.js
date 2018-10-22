@@ -105,6 +105,7 @@ var Explorer = Backbone.View.extend({
   results: new Products(),
   loggedIn: false,
   userID: null,
+  lastError: null,
 
   initialize: function (options) {
     Backbone.View.prototype.initialize.apply(this, arguments);
@@ -123,6 +124,10 @@ var Explorer = Backbone.View.extend({
             this.userID = data.UserID;
             this.loggedIn = true;
           }
+        }, this),
+        error: _.bind(function (jqXhr, textStatus, errorThrown) {
+          this.lastError = "An error occurred while trying to log you in."
+          this.render()
         }, this)
       })
     }
@@ -162,6 +167,11 @@ var Explorer = Backbone.View.extend({
   },
 
   render: function () {
+    var error = ""
+    if (this.lastError !== null) {
+      error = $('<div class="alert alert-danger primary-error">' + this.lastError + '</div>')
+    }
+
     var searchBox = $('<input type="text" name="search" placeholder="Product to Search For"  value="alexa"/>')
 
     var table = $(
@@ -184,6 +194,7 @@ var Explorer = Backbone.View.extend({
     }
 
     this.$el.empty()
+    this.$el.append(error)
     this.$el.append(searchBox)
     this.$el.append(table)
     return this
@@ -206,7 +217,7 @@ function onSignIn(googleUser) {
 /********** Boot the App *********/
 
 $(function() {
-  var gExplorer = new Explorer({
+  gExplorer = new Explorer({
     el: $('.main-app').first()
   })
   gExplorer.render()
