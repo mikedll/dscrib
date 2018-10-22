@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Google.Apis.Auth;
@@ -26,17 +27,16 @@ namespace DScrib2.Controllers
             public WebConfig web;
         }
 
-        public ActionResult TokenLogin()
+        public async Task<ActionResult> TokenLogin()
         {
-            
-            var jsonContents = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "credentials.json"));
-            var json = JsonConvert.DeserializeObject<CredConfig>(jsonContents);
-            string clientId = json.web.client_id;
             var idToken = Request["idToken"];
 
+            var validPayload = await GoogleJsonWebSignature.ValidateAsync(idToken);
 
-            var validPayload = GoogleJsonWebSignature.ValidateAsync(idToken);
-            return null;
+            // Should be able to insert this into SQL Server.
+            var sub = validPayload.Subject;
+
+            return Json(new { ID = 2 }); ;
         }
     }
 }

@@ -123,8 +123,8 @@ var Explorer = Backbone.View.extend({
           idToken: UserIdToken
         },
         success: _.bind(function (data) {
-          if ('UserID' in data) {
-            this.userID = data.UserID;
+          if ('ID' in data) {
+            this.userID = data.ID;
             this.loggedIn = true;
           }
         }, this),
