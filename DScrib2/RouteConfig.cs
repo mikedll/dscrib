@@ -14,6 +14,12 @@ namespace DScrib2
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "Home",
+                url: "",
+                defaults: new { controller = "Home", action = "Index" }
+            );
+
+            routes.MapRoute(
                 name: "Search",
                 url: "search",
                 defaults: new { controller = "Search", action = "Index" }

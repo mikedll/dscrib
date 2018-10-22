@@ -24,12 +24,7 @@ namespace DScrib2
 
         private string ReadFile(string file)
         {
-            var body = "";
-            using (var sr = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file), Encoding.UTF8))
-            {
-                body += sr.ReadToEnd();
-            }
-            return body;
+            return File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file));
         }
 
         public string GetTestSearch()
