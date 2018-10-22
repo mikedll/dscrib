@@ -1,4 +1,6 @@
-﻿
+﻿var UserIdToken = null;
+var gExplorer = null;
+
 var KeyCodes = {
   ENTER: 13
 }
@@ -101,11 +103,29 @@ var Explorer = Backbone.View.extend({
   search: "",
   searching: false,
   results: new Products(),
+  loggedIn: false,
+  userID: null,
 
   initialize: function (options) {
     Backbone.View.prototype.initialize.apply(this, arguments);
 
     this.listenTo(this.results, 'reset', this.onResultsChanged)
+  },
+
+  ensureLoggedIn: function () {
+    if (UserIdToken !== null && !this.loggedIn) {
+      $.ajax({
+        url: '/sessions/token_login',
+        method: 'POST',
+        dataType: 'JSON',
+        success: _.bind(function (data) {
+          if ('UserID' in data) {
+            this.userID = data.UserID;
+            this.loggedIn = true;
+          }
+        }, this)
+      })
+    }
   },
 
   onSearchChange: function(e) {
@@ -117,7 +137,12 @@ var Explorer = Backbone.View.extend({
   },
   
   onKeyUp: function(e) {    
-    if(e.keyCode === KeyCodes.ENTER) {
+    if (e.keyCode === KeyCodes.ENTER) {
+
+      if (!this.loggedIn) {
+        console.log("You must be logged in to use this feature.")
+        return;
+      }
       e.preventDefault()
 
       this.searching = true
@@ -169,12 +194,21 @@ var Explorer = Backbone.View.extend({
   } 
 })
 
+function onSignIn(googleUser) {
+  var id_token = googleUser.getAuthResponse().id_token;
+  //console.log("ID Token: " + id_token);
+  UserIdToken = id_token
+  if (gExplorer) {
+    gExplorer.ensureLoggedIn();
+  }
+};
+
 /********** Boot the App *********/
 
 $(function() {
-  var e = new Explorer({
+  var gExplorer = new Explorer({
     el: $('.main-app').first()
   })
-  e.render()
-  e.ready()
+  gExplorer.render()
+  gExplorer.ready()
 })

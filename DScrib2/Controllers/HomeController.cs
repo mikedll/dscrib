@@ -27,12 +27,15 @@ namespace DScrib2.Controllers
 
         public ActionResult Index()
         {
-            if(clientId == "")
+
+            if(clientId == null)
             {
                 var jsonContents = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "credentials.json"));
                 var json = JsonConvert.DeserializeObject<CredConfig>(jsonContents);
                 clientId = json.web.client_id;
             }
+
+            ViewBag.ClientID = clientId;
 
             return View();
         }
