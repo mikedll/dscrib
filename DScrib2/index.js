@@ -116,9 +116,12 @@ var Explorer = Backbone.View.extend({
   ensureLoggedIn: function () {
     if (UserIdToken !== null && !this.loggedIn) {
       $.ajax({
-        url: '/sessions/token_login',
+        url: '/Sessions/TokenLogin',
         method: 'POST',
         dataType: 'JSON',
+        data: {
+          idToken: UserIdToken
+        },
         success: _.bind(function (data) {
           if ('UserID' in data) {
             this.userID = data.UserID;

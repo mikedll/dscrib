@@ -21,7 +21,6 @@ namespace DScrib2.Controllers
                 public string auth_uri;
                 public string token_uri;
                 public string auth_provider_x509_cert_url;
-                public string javascript_origins;
             }
 
             public WebConfig web;
@@ -33,7 +32,7 @@ namespace DScrib2.Controllers
             var jsonContents = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "credentials.json"));
             var json = JsonConvert.DeserializeObject<CredConfig>(jsonContents);
             string clientId = json.web.client_id;
-            var idToken = Request["token"];
+            var idToken = Request["idToken"];
 
 
             var validPayload = GoogleJsonWebSignature.ValidateAsync(idToken);
