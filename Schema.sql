@@ -23,14 +23,17 @@
 
 
 -- Schema.
+DROP TABLE "User"
 CREATE TABLE "User" (
   "ID" INT PRIMARY KEY,
-  "Email" NVARCHAR,
-  "VendorID" NVARCHAR,
+  "Email" NVARCHAR(200) NOT NULL,
+  "VendorID" NVARCHAR(50) NOT NULL,
   );
 
-CREATE TABLE "Reviews" (
+DROP TABLE Review
+CREATE TABLE "Review" (
   "ID" INT PRIMARY KEY,
-  "Text" NVARCHAR,
-  "UserID" INT FOREIGN KEY REFERENCES "User"(ID)
+  "Text" TEXT NOT NULL,
+  "UserID" INT FOREIGN KEY REFERENCES "User"(ID) NOT NULL
 );
+

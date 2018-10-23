@@ -7,6 +7,7 @@ using DScrib2;
 using AngleSharp.Parser.Html;
 using System.Text.RegularExpressions;
 using System.IO;
+using DScrib2.Models;
 
 namespace Tester
 {
@@ -15,11 +16,17 @@ namespace Tester
 
         static void Main(string[] args)
         {
+            var p = new Program();
+            p.DbExec();
+        }
+
+        public void AmazonTest()
+        {
             var sc = new AmazonWebClient();
 
             var body = sc.GetTestReview(); // sc.GetReviewPage("Sandalwood-Patchouli-Different-Scents-Karma", "B06Y274RR8");
 
-            if(body == null)
+            if (body == null)
             {
                 Console.WriteLine("Got null response from GetReviewPage.");
                 return;
@@ -33,6 +40,12 @@ namespace Tester
             //System.IO.File.WriteAllText(destFile, body, Encoding.UTF8);
 
             Console.WriteLine("Finished.");
+        }
+
+        public void DbExec()
+        {
+            var db = new General();
+            db.Rock();
         }
     }
 }
