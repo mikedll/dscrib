@@ -12,30 +12,31 @@ namespace DScrib2.Controllers
 {
     public class SessionsController : Controller
     {
-        private class CredConfig
-        {
-            public class WebConfig
-            {
-                public string client_id;
-                public string client_secret;
-                public string project_id;
-                public string auth_uri;
-                public string token_uri;
-                public string auth_provider_x509_cert_url;
-            }
-
-            public WebConfig web;
-        }
-
         public async Task<ActionResult> TokenLogin()
         {
             var idToken = Request["idToken"];
 
-            var validPayload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+            // Probably should use Auth class from Google lib.
+            var jsonContents = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "credentials.json"));
+            var credJson = JsonConvert.DeserializeObject<GoogleCredentialConfig>(jsonContents);
 
-            // Should be able to insert this into SQL Server.
-            var sub = validPayload.Subject;
+            var settings = new GoogleJsonWebSignature.ValidationSettings() { Audience = new List<string>() { credJson.Web.ClientID }  };
 
+            string subject = null;
+            try
+            {
+                var validPayload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
+                subject = validPayload.Subject;
+            }
+            catch (InvalidJwtException e)
+            {
+                Response.StatusCode = 403;
+                Response.StatusDescription = "Your token was invalid.";
+                // Should probably log this.
+                return null;
+            }
+
+            //// Should be able to insert this into SQL Server.
             return Json(new { ID = 2 }); ;
         }
     }
