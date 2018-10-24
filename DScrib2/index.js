@@ -110,6 +110,10 @@ var Explorer = Backbone.View.extend({
   initialize: function (options) {
     Backbone.View.prototype.initialize.apply(this, arguments);
 
+    if ('userID' in options) {
+      this.userID = options.userID;
+      this.loggedIn = true;
+    }
     this.listenTo(this.results, 'reset', this.onResultsChanged)
   },
 
@@ -226,7 +230,8 @@ function onSignIn(googleUser) {
 
 $(function() {
   gExplorer = new Explorer({
-    el: $('.main-app').first()
+    el: $('.main-app').first(),
+    userID: __userID
   })
   gExplorer.render()
   gExplorer.ready()

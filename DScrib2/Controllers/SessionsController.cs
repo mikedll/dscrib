@@ -47,6 +47,8 @@ namespace DScrib2.Controllers
                 user = dbWrapper.CreateUser(newUser);
             }
 
+            Session["userID"] = user.ID;
+
             // Should be able to insert this into SQL Server.
             return Json(user); ;
         }

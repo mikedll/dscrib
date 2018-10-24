@@ -28,7 +28,14 @@
   <meta name="google-signin-scope" content="profile email">
   <meta name="google-signin-client_id" content="@ViewBag.ClientID">
   <script src="https://apis.google.com/js/platform.js" async defer></script>
-  
+  <script type="text/javascript">
+  @if (Session["userID"] != null)
+  {
+    @Html.Raw("__userID = " + @Session["userID"] + ";");
+  } else {
+    @Html.Raw("__userID = null;");    
+  }
+  </script>
 </head>
 <body>
   <div class="container main-cont">
