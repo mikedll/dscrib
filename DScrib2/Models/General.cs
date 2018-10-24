@@ -8,32 +8,79 @@ namespace DScrib2.Models
 {
     public class General
     {
-        public void Rock()
+        private string connectionString = "Data Source=(local);Initial Catalog=DScrib2;Integrated Security=true";
+
+        /*
+         * Ignores ID field of User if set.
+         * 
+         * Returns a User object if persistence succeeded.
+         * Throws an exception if there is a problem.
+         */
+        public User CreateUser(User user)
         {
-            string connectionString = "Data Source=(local);Initial Catalog=DScrib2;Integrated Security=true";
-
-            // Provide the query string with a parameter placeholder. 
-            string queryString = "SELECT * from \"User\" WHERE Id = 1";
-
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                SqlCommand command = new SqlCommand(queryString, connection);
+                string query = "INSERT INTO \"User\" (Email, VendorID) OUTPUT INSERTED.ID VALUES (@email, @vendorID)";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@email", user.Email);
+                command.Parameters.AddWithValue("@vendorID", user.VendorID);
 
                 try
                 {
                     connection.Open();
-                    SqlDataReader reader = command.ExecuteReader();
-                    while(reader.Read())
-                    {
-                        Console.WriteLine($"-- {reader["ID"]} {reader["Email"]} {reader["VendorID"]}");
-                    }
+                    var newID = (int)command.ExecuteScalar();
+                    user.ID = newID;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    if(ex.Message.StartsWith("Violation of UNIQUE KEY constraint"))
+                    {
+                        throw new Exception("Insertion would have violated unique key constraint.");
+                        // propogate error?
+                    } else
+                    {
+                        // Log error?
+                        throw;
+                    }
                 }
             }
 
+            return user;
+        }
+
+        /*
+         * Returns null if user canot be found. Returns User otherwise.
+         */
+        public User GetUser(string subject)
+        {
+            User foundUser = null;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT ID, Email, VendorID FROM \"User\" WHERE VendorID = @vid";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@vid", subject);
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if(reader.Read())
+                    {
+                        foundUser = new User()
+                        {
+                            ID = reader.GetInt32(0),
+                            Email = reader.GetString(1),
+                            VendorID = reader.GetString(2)
+                        };
+                    }
+                } catch (Exception ex)
+                {
+                    // Log error?
+                    throw;
+                }
+            }
+
+            return foundUser;
         }
     }
 }

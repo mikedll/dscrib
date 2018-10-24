@@ -45,7 +45,35 @@ namespace Tester
         public void DbExec()
         {
             var db = new General();
-            db.Rock();
+            var user = db.GetUser("12345");
+            var user2 = db.GetUser("12");
+
+            if (user != null && user.ID == 1 && user2 == null)
+            {
+                Console.WriteLine("Okay");
+            }
+
+            var newUser = new User { VendorID = "9090112", Email = "sam2@example.com" };
+            var newUser2 = db.CreateUser(newUser);
+            if (newUser2.ID > 0)
+            {
+                Console.WriteLine("Okay insert.");
+            }
+
+            try
+            {
+                var newUser3 = db.CreateUser(newUser);
+            }
+            catch (Exception ex)
+            {
+                if(ex.Message == "Insertion would have violated unique key constraint.")
+                {
+                    Console.WriteLine("Dup caught.");
+                } else
+                {
+                    throw;
+                }
+            }
         }
     }
 }

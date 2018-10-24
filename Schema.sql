@@ -25,9 +25,9 @@
 -- Schema.
 DROP TABLE "User"
 CREATE TABLE "User" (
-  "ID" INT PRIMARY KEY,
+  "ID" INT IDENTITY PRIMARY KEY,
   "Email" NVARCHAR(200) NOT NULL,
-  "VendorID" NVARCHAR(50) NOT NULL,
+  "VendorID" NVARCHAR(50) NOT NULL UNIQUE,
   );
 
 DROP TABLE Review
@@ -36,4 +36,9 @@ CREATE TABLE "Review" (
   "Text" TEXT NOT NULL,
   "UserID" INT FOREIGN KEY REFERENCES "User"(ID) NOT NULL
 );
+
+SELECT ID, Email, VendorID FROM "User" 
+
+INSERT INTO "User" (Email, VendorID) VALUES ('sam@example.com', '12345');
+INSERT INTO "User" (Email, VendorID) VALUES ('sam@example.com', '123456');
 
