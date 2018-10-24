@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using Google.Apis.Auth;
 using Newtonsoft.Json;
+using DScrib2.Models;
 
 namespace DScrib2.Controllers
 {
@@ -23,10 +24,12 @@ namespace DScrib2.Controllers
             var settings = new GoogleJsonWebSignature.ValidationSettings() { Audience = new List<string>() { credJson.Web.ClientID }  };
 
             string subject = null;
+            string email = null;
             try
             {
                 var validPayload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
                 subject = validPayload.Subject;
+                email = validPayload.Email;
             }
             catch (InvalidJwtException e)
             {
@@ -36,8 +39,16 @@ namespace DScrib2.Controllers
                 return null;
             }
 
-            //// Should be able to insert this into SQL Server.
-            return Json(new { ID = 2 }); ;
+            General dbWrapper = new General();
+            var user = dbWrapper.GetUser(subject);
+            if(user == null)
+            {
+                var newUser = new User() { Email = email, VendorID = subject };
+                user = dbWrapper.CreateUser(newUser);
+            }
+
+            // Should be able to insert this into SQL Server.
+            return Json(user); ;
         }
     }
 }

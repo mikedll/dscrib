@@ -149,12 +149,14 @@ var Explorer = Backbone.View.extend({
   
   onKeyUp: function(e) {    
     if (e.keyCode === KeyCodes.ENTER) {
+      e.preventDefault()
+      this.lastError = null;
 
       if (!this.loggedIn) {
-        console.log("You must be logged in to use this feature.")
+        this.lastError = "You must be logged in to use this feature.";
+        this.render()
         return;
       }
-      e.preventDefault()
 
       this.searching = true
       this.results.reset()
