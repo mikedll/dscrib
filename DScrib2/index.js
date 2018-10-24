@@ -110,7 +110,7 @@ var Explorer = Backbone.View.extend({
   initialize: function (options) {
     Backbone.View.prototype.initialize.apply(this, arguments);
 
-    if ('userID' in options) {
+    if ('userID' in options && options.userID !== null) {
       this.userID = options.userID;
       this.loggedIn = true;
     }
