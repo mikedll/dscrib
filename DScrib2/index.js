@@ -130,6 +130,7 @@ var Explorer = Backbone.View.extend({
           if ('ID' in data) {
             this.userID = data.ID;
             this.loggedIn = true;
+            this.render()
           } else {
             this.lastError = "A very unexpected error occurred while trying to log you in. This is likely a bug. ☹"
             this.render()

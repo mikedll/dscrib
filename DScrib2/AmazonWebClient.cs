@@ -12,8 +12,16 @@ namespace DScrib2
 {
     public class AmazonWebClient
     {
-        public AmazonWebClient()
+        private string email;
+
+        public AmazonWebClient(string email)
         {
+            if(email == null || email == "")
+            {
+                throw new ArgumentException("Email required to make calls to Amazon with this class.");
+            }
+
+            this.email = email;
             this.IsTestMode = false;
         }
 
@@ -40,6 +48,7 @@ namespace DScrib2
         private string GetPage(string url)
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
+            request.Headers["From"] = email;
 
             string body = "";
             WebResponse response = null;

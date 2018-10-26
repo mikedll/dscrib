@@ -40,7 +40,7 @@ namespace DScrib2.Controllers
             }
 
             General dbWrapper = new General();
-            var user = dbWrapper.GetUser(subject);
+            var user = dbWrapper.GetUserByVendorID(subject);
             if(user == null)
             {
                 var newUser = new User() { Email = email, VendorID = subject };

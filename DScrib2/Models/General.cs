@@ -48,10 +48,42 @@ namespace DScrib2.Models
             return user;
         }
 
+        public User GetUser(int ID)
+        {
+            User foundUser = null;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT ID, Email, VendorID FROM \"User\" WHERE ID = @id";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", ID);
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        foundUser = new User()
+                        {
+                            ID = reader.GetInt32(0),
+                            Email = reader.GetString(1),
+                            VendorID = reader.GetString(2)
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log error?
+                    throw;
+                }
+            }
+
+            return foundUser;
+        }
         /*
          * Returns null if user canot be found. Returns User otherwise.
          */
-        public User GetUser(string subject)
+        public User GetUserByVendorID(string subject)
         {
             User foundUser = null;
 

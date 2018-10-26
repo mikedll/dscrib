@@ -17,12 +17,14 @@ namespace Tester
         static void Main(string[] args)
         {
             var p = new Program();
-            p.DbExec();
+            p.AmazonTest();
+            //p.DbExec();
         }
 
         public void AmazonTest()
         {
-            var sc = new AmazonWebClient();
+            // Tolerable to have a made-up email when debugging.
+            var sc = new AmazonWebClient("testing@example.com");
 
             var body = sc.GetTestReview(); // sc.GetReviewPage("Sandalwood-Patchouli-Different-Scents-Karma", "B06Y274RR8");
 
@@ -45,8 +47,8 @@ namespace Tester
         public void DbExec()
         {
             var db = new General();
-            var user = db.GetUser("12345");
-            var user2 = db.GetUser("12");
+            var user = db.GetUserByVendorID("12345");
+            var user2 = db.GetUserByVendorID("12");
 
             if (user != null && user.ID == 1 && user2 == null)
             {
