@@ -179,9 +179,11 @@ var Explorer = Backbone.View.extend({
   },
 
   render: function () {
-    var error = ""
+    var infoBox = ""
     if (this.lastError !== null) {
-      error = $('<div class="alert alert-danger primary-error">' + this.lastError + '</div>')
+      infoBox = $('<div class="alert alert-danger primary-error role="alert">' + this.lastError + '</div>')
+    } else if (this.loggedIn === false) {
+      infoBox = $('<div class="alert alert-warning" role="alert">You must be logged in to use this site.</div>')
     }
 
     var searchBox = $('<input type="text" name="search" placeholder="Product to Search For"  value="alexa"/>')
@@ -206,7 +208,7 @@ var Explorer = Backbone.View.extend({
     }
 
     this.$el.empty()
-    this.$el.append(error)
+    this.$el.append(infoBox)
     this.$el.append(searchBox)
     this.$el.append(table)
     return this
