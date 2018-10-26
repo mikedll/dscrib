@@ -26,5 +26,10 @@ namespace DScrib2.Controllers
 
             return View();
         }
+
+        public ActionResult YourEmail()
+        {
+            return View();
+        }
     }
 }
