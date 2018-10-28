@@ -22,13 +22,13 @@ namespace DScrib2
             routes.MapRoute(
                 name: "Search",
                 url: "search",
-                defaults: new { controller = "Search", action = "Index" }
+                defaults: new { controller = "Reviews", action = "Index" }
             );
 
             routes.MapRoute(
                 name: "Review",
-                url: "reviews",
-                defaults: new { controller = "Search", action = "Review" }
+                url: "reviews/show",
+                defaults: new { controller = "Reviews", action = "Show" }
             );
 
             routes.MapRoute(

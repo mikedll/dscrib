@@ -15,7 +15,7 @@ var Product = Backbone.Model.extend({
     if (this.busy || typeof(this.get('review')) !== 'undefined') return;
     this.busy = true;
     $.get({
-      url: '/reviews',
+      url: '/reviews/show',
       data: {
         linkSlug: this.get('linkSlug'),
         productID: this.get('productID')
@@ -24,9 +24,10 @@ var Product = Backbone.Model.extend({
       success: _.bind(function (data) {
         var review;
         if (data === null) {
-          review = {reviewDate: 'n/a', review: '(unable to retrieve)'}
+          review = { reviewDate: 'n/a', review: '(unable to retrieve)' }
+        } else {
+          review = _.extend({}, data, { 'reviewDate': moment(data.Date).format('MMMM Do YYYY') })
         }
-        review = _.extend({}, data, { 'reviewDate': moment(data.reviewDate).format('MMMM Do YYYY') })
         this.set({ 'review': review })
       }, this),
       error: _.bind(function (jqXhr, textStatus, errorThrown) {

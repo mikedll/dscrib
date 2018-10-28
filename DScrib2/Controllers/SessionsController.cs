@@ -31,7 +31,7 @@ namespace DScrib2.Controllers
                 subject = validPayload.Subject;
                 email = validPayload.Email;
             }
-            catch (InvalidJwtException e)
+            catch (InvalidJwtException)
             {
                 Response.StatusCode = 403;
                 Response.StatusDescription = "Your token was invalid.";

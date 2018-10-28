@@ -6,11 +6,13 @@ using DScrib2.Models;
 
 namespace DScrib2
 {
-    public class SearchController : Controller
+    public class ReviewsController : Controller
     {
         private AmazonWebClient client;
+        private General db;
+        private User user;
 
-        private bool EnsureClientDefined()
+        private bool WebClientOrError()
         {
             if (client != null) return true;
 
@@ -21,7 +23,7 @@ namespace DScrib2
             }
 
             var db = new General();
-            var user = db.GetUser((int)Session["userID"]);
+            user = db.GetUser((int)Session["userID"]);
             if (user == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.Forbidden;
@@ -32,18 +34,36 @@ namespace DScrib2
 
             return true;
         }
-        public ActionResult Review(string linkSlug, string productID)
-        {
-            if (!EnsureClientDefined()) return null;
 
-            var result = client.GetReviewPage(linkSlug, productID);
+        public ActionResult Show(string linkSlug, string productID)
+        {
+            var review = db.GetReview(linkSlug, productID);
+            if(review != null)
+            {
+                return Json(new { reviewDate = review.Date, review = review.Text }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (!WebClientOrError()) return null;
+
+            var result = client.GetReview(linkSlug, productID);
             if (result == null) return Json(null, JsonRequestBehavior.AllowGet);
-            return Json(new { reviewDate = result.Item1, review = result.Item2 }, JsonRequestBehavior.AllowGet);
+
+            review = new Review
+            {
+                Date = result.Item1,
+                Text = result.Item2,
+                Slug = linkSlug,
+                AmazonID = productID,
+                UserID = user.ID
+            };
+            review = db.SaveReview(review);
+
+            return Json(review, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Index(string q)
         {
-            if (!EnsureClientDefined()) return null;
+            if (!WebClientOrError()) return null;
 
             return Json(client.Search(q).Select(v => new Dictionary<string, string>(){
                 { "name", v.Item1 },

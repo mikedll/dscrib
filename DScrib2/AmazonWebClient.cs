@@ -32,17 +32,17 @@ namespace DScrib2
 
         private string ReadFile(string file)
         {
-            return File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file));
+            return File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../tmp/", file));
         }
 
         public string GetTestSearch()
         {
-            return ReadFile("output.txt");
+            return ReadFile("sampleSearch.html");
         }
 
         public string GetTestReview()
         {
-            return ReadFile("sample-review.txt");
+            return ReadFile("sampleReview.html");
         }
 
         private string GetPage(string url)
@@ -98,11 +98,16 @@ namespace DScrib2
          * Returns date, review of top-rated positive review from review page.
          * 
          */
-        public Tuple<DateTime, string> GetReviewPage(string linkSlug, string productID)
+        public Tuple<DateTime, string> GetReview(string linkSlug, string productID)
         {
             // Reviews look like this: https://www.amazon.com/Eucalan-Lavender-Fine-Fabric-Ounce/product-reviews/B001DEJMPG/
             var body = GetPage($"https://www.amazon.com/{linkSlug}/product-reviews/{productID}/");
 
+            return ParseReview(body);
+        }
+
+        public Tuple<DateTime, string> ParseReview(string body)
+        {
             var doc = ParseDoc(body);
             var reviewEl = doc.QuerySelector(".view-point-review.positive-review");
 
@@ -113,7 +118,8 @@ namespace DScrib2
             if (dateEl != null)
             {
                 var reviewDateStr = dateEl.TextContent;
-                if (reviewDateStr.StartsWith("on ")) {
+                if (reviewDateStr.StartsWith("on "))
+                {
                     CultureInfo enUs = new CultureInfo("en-US");
                     if (!DateTime.TryParseExact(reviewDateStr.Substring(3), "MMMM d, yyyy", enUs, DateTimeStyles.None, out reviewDate))
                     {
@@ -146,9 +152,15 @@ namespace DScrib2
                 return new List<Tuple<string, string, string>>();
             }
 
+            return ParseSearch(body);
+        }
+
+        public List<Tuple<string, string, string>> ParseSearch(string body)
+        {
             var doc = ParseDoc(body);
-            var items = doc.QuerySelectorAll(".s-result-list .a-link-normal.s-access-detail-page");
-            var n = items.Count();
+            var items = doc.QuerySelectorAll(".a-m-us #a-page");
+
+            var items2 = items.Chi
 
             var results = new List<Tuple<string, string, string>>();
 
@@ -169,6 +181,5 @@ namespace DScrib2
             }
             return results;
         }
-
     }
 }

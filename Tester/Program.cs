@@ -27,16 +27,16 @@ namespace Tester
             var sc = new AmazonWebClient("testing@example.com");
 
             var body = sc.GetTestReview(); // sc.GetReviewPage("Sandalwood-Patchouli-Different-Scents-Karma", "B06Y274RR8");
-
             if (body == null)
             {
                 Console.WriteLine("Got null response from GetReviewPage.");
                 return;
             }
+            var results = sc.ParseSearch(body);
 
-            var review = sc.GetReviewPage("Eucalan-Lavender-Fine-Fabric-Ounce", "B001DEJMPG");
-            Console.WriteLine(review.Item1);
-            Console.WriteLine(review.Item2);
+            //var review = sc.GetReview("Eucalan-Lavender-Fine-Fabric-Ounce", "B001DEJMPG");
+            //Console.WriteLine(review.Item1);
+            //Console.WriteLine(review.Item2);
             //var destFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sample-review.html");
             //Console.WriteLine($"Writing {body.Length} characters to {AppDomain.CurrentDomain.BaseDirectory}");
             //System.IO.File.WriteAllText(destFile, body, Encoding.UTF8);
