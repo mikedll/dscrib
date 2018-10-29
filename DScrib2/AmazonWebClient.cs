@@ -42,7 +42,7 @@ namespace DScrib2
 
         public string GetTestReview()
         {
-            return ReadFile("sampleReview.html");
+            return ReadFile("searchResult.html");
         }
 
         private string GetPage(string url)
@@ -158,19 +158,29 @@ namespace DScrib2
         public List<Tuple<string, string, string>> ParseSearch(string body)
         {
             var doc = ParseDoc(body);
-            var items = doc.QuerySelectorAll(".a-m-us #a-page");
 
-            var items2 = items.Chi
+            var sel1 = ".s-result-list .a-link-normal.s-access-detail-page";
+            var sel2 = ".s-result-list h5 .a-link-normal";
+
+            // Amazon gives different html and its hard to say which one will be coming.
+            var selMode = 1;
+            var items = doc.QuerySelectorAll(sel1);
+            if(items.Length == 0)
+            {
+                selMode = 2;
+                items = doc.QuerySelectorAll(sel2);
+            }
 
             var results = new List<Tuple<string, string, string>>();
-
+            // "/All-new-Echo-Dot-3rd-Gen/dp/B0792KTHKJ?keywords=alexa&qid=1540840135&sr=8-2&ref=sr_1_2"
             // Products look like this: https://www.amazon.com/Sandalwood-Patchouli-Different-Scents-Karma/dp/B06Y274RR8/
             // There is a link-slug, a /dp/, and an external product ID string.
-            var productUrlRegex = new Regex(@"http(s)?://www.amazon.com/([^/]+)/dp/([^/]+)/", RegexOptions.Compiled);
+            var productUrlRegex = new Regex(@"http(s)?://www.amazon.com/([^/]+)/dp/([^/?]+)", RegexOptions.Compiled);
             foreach (var item in items)
             {
                 var link = item.GetAttribute("href");
-                var name = item.QuerySelector("h2").TextContent;
+
+                var name = item.QuerySelector(selMode == 1 ? "h2" : "span").TextContent;
 
                 var match = productUrlRegex.Match(link);
 
