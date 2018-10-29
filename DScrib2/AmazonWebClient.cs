@@ -98,7 +98,7 @@ namespace DScrib2
          * Returns date, review of top-rated positive review from review page.
          * 
          */
-        public Tuple<DateTime, string> GetReview(string linkSlug, string productID)
+        public Tuple<DateTime, string, string> GetReview(string linkSlug, string productID)
         {
             // Reviews look like this: https://www.amazon.com/Eucalan-Lavender-Fine-Fabric-Ounce/product-reviews/B001DEJMPG/
             var body = GetPage($"https://www.amazon.com/{linkSlug}/product-reviews/{productID}/");
@@ -106,12 +106,19 @@ namespace DScrib2
             return ParseReview(body);
         }
 
-        public Tuple<DateTime, string> ParseReview(string body)
+        public Tuple<DateTime, string, string> ParseReview(string body)
         {
             var doc = ParseDoc(body);
             var reviewEl = doc.QuerySelector(".view-point-review.positive-review");
 
             if (reviewEl == null) return null;
+
+            var nameNode = doc.QuerySelector(".a-row.product-title a");
+            var name = "";
+            if (nameNode != null)
+            {
+                name = nameNode.TextContent;
+            }
 
             var dateEl = reviewEl.QuerySelector(".a-row .review-date");
             DateTime reviewDate = DateTime.Now;
@@ -136,7 +143,8 @@ namespace DScrib2
                 review = reviewNode.TextContent;
             }
 
-            return new Tuple<DateTime, string>(reviewDate, review);
+
+            return new Tuple<DateTime, string, string>(reviewDate, review, name);
         }
 
         /*

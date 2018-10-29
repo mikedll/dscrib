@@ -6,7 +6,7 @@ using System.Web;
 
 namespace DScrib2.Models
 {
-    public class General
+    public class DbWrapper
     {
         private string connectionString = "Data Source=(local);Initial Catalog=DScrib2;Integrated Security=true";
 
@@ -85,8 +85,9 @@ namespace DScrib2.Models
 
         public Review SaveReview(Review review)
         {
-            var newID = SaveOne("Review (Text, Date, Slug, AmazonID, UserID) OUTPUT INSERTED.ID VALUES (@text, @date, @slug, @amazonID, @userID)", (cmd) =>
+            var newID = SaveOne("Review (Name, Text, Date, Slug, AmazonID, UserID) OUTPUT INSERTED.ID VALUES (@name, @text, @date, @slug, @amazonID, @userID)", (cmd) =>
             {
+                cmd.Parameters.AddWithValue("@name", review.Name);
                 cmd.Parameters.AddWithValue("@text", review.Text);
                 cmd.Parameters.AddWithValue("@date", review.Date);
                 cmd.Parameters.AddWithValue("@slug", review.Slug);
@@ -99,7 +100,7 @@ namespace DScrib2.Models
 
         public Review GetReview(string linkSlug, string productID)
         {
-            return GetOne("SELECT ID, Text, Date, Slug, AmazonID, UserID FROM Review WHERE Slug = @slug AND AmazonID = @amazonID", (cmd) =>
+            return GetOne("SELECT ID, Name, Text, Date, Slug, AmazonID, UserID FROM Review WHERE Slug = @slug AND AmazonID = @amazonID", (cmd) =>
             {
                 cmd.Parameters.AddWithValue("@slug", linkSlug);
                 cmd.Parameters.AddWithValue("@amazonID", productID);
@@ -108,11 +109,12 @@ namespace DScrib2.Models
                 return new Review
                 {
                     ID = reader.GetInt32(0),
-                    Text = reader.GetString(1),
-                    Date = reader.GetDateTime(2),
-                    Slug = reader.GetString(3),
-                    AmazonID = reader.GetString(4),
-                    UserID = reader.GetInt32(5)
+                    Name = reader.GetString(1),
+                    Text = reader.GetString(2),
+                    Date = reader.GetDateTime(3),
+                    Slug = reader.GetString(4),
+                    AmazonID = reader.GetString(5),
+                    UserID = reader.GetInt32(6)
                 };
             });
         }

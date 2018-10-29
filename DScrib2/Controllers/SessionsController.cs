@@ -39,7 +39,7 @@ namespace DScrib2.Controllers
                 return null;
             }
 
-            General dbWrapper = new General();
+            DbWrapper dbWrapper = new DbWrapper();
             var user = dbWrapper.GetUserByVendorID(subject);
             if(user == null)
             {

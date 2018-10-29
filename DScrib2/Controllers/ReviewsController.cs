@@ -9,20 +9,20 @@ namespace DScrib2
     public class ReviewsController : Controller
     {
         private AmazonWebClient client;
-        private General db;
+        private DbWrapper db;
         private User user;
 
-        private bool WebClientOrError()
+        private bool RequireUserAndDb()
         {
-            if (client != null) return true;
+            if (user != null && db != null) return true;
 
-            if(Session["userID"] == null)
+            if (Session["userID"] == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return false;
             }
 
-            var db = new General();
+            db = new DbWrapper();
             user = db.GetUser((int)Session["userID"]);
             if (user == null)
             {
@@ -30,26 +30,37 @@ namespace DScrib2
                 return false;
             }
 
-            client = new AmazonWebClient(user.Email);
+            return true;
+        }
 
+        private bool RequireAmazonClient()
+        {
+            if (client != null) return true;
+
+            if (!RequireUserAndDb()) return false;
+
+            client = new AmazonWebClient(user.Email);
             return true;
         }
 
         public ActionResult Show(string linkSlug, string productID)
         {
-            var review = db.GetReview(linkSlug, productID);
-            if(review != null)
-            {
-                return Json(new { reviewDate = review.Date, review = review.Text }, JsonRequestBehavior.AllowGet);
-            }
+            if (!RequireUserAndDb()) return null;
+            if (!RequireAmazonClient()) return null;
 
-            if (!WebClientOrError()) return null;
+            var review = db.GetReview(linkSlug, productID);
+            if(review != null) return Json(review, JsonRequestBehavior.AllowGet);
 
             var result = client.GetReview(linkSlug, productID);
-            if (result == null) return Json(null, JsonRequestBehavior.AllowGet);
+            if (result == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
+                return Json(null, JsonRequestBehavior.AllowGet);
+            }
 
             review = new Review
             {
+                Name = result.Item3,
                 Date = result.Item1,
                 Text = result.Item2,
                 Slug = linkSlug,
@@ -63,12 +74,12 @@ namespace DScrib2
 
         public ActionResult Index(string q)
         {
-            if (!WebClientOrError()) return null;
+            if (!RequireAmazonClient()) return null;
 
             return Json(client.Search(q).Select(v => new Dictionary<string, string>(){
-                { "name", v.Item1 },
-                { "linkSlug", v.Item2 },
-                { "productID", v.Item3 }}), JsonRequestBehavior.AllowGet);
+                { "Name", v.Item1 },
+                { "Slug", v.Item2 },
+                { "AmazonID", v.Item3 }}), JsonRequestBehavior.AllowGet);
         }
     }
 }

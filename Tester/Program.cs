@@ -46,7 +46,7 @@ namespace Tester
 
         public void DbExec()
         {
-            var db = new General();
+            var db = new DbWrapper();
             var user = db.GetUserByVendorID("12345");
             var user2 = db.GetUserByVendorID("12");
 

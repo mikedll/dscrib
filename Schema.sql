@@ -33,7 +33,8 @@ CREATE TABLE "User" (
   );
 
 CREATE TABLE "Review" (
-  "ID" INT PRIMARY KEY,
+  "ID" INT IDENTITY PRIMARY KEY,
+  "Name" NVARCHAR(1000) NOT NULL,
   "Text" TEXT NOT NULL,
   "Date" DateTime NOT NULL,
   "Slug" NVARCHAR(200) NOT NULL,
@@ -42,6 +43,8 @@ CREATE TABLE "Review" (
 );
 
 SELECT ID, Email, VendorID FROM "User" 
+
+SELECT ID, Name FROM Review
 
 INSERT INTO "User" (Email, VendorID) VALUES ('sam@example.com', '12345');
 INSERT INTO "User" (Email, VendorID) VALUES ('sam@example.com', '123456');

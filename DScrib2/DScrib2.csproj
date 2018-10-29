@@ -153,7 +153,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GoogleCredentialConfig.cs" />
-    <Compile Include="Models\General.cs" />
+    <Compile Include="Models\DbWrapper.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteConfig.cs" />

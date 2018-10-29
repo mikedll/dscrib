@@ -12,28 +12,28 @@ var Product = Backbone.Model.extend({
   // id (from link), name, link-pretty-part (pretty part, ID part), a review
   // id may eventually come from our database.
   fetchReview: function () {
-    if (this.busy || typeof(this.get('review')) !== 'undefined') return;
+    if (this.busy || typeof(this.get('Text')) !== 'undefined') return;
     this.busy = true;
     $.get({
       url: '/reviews/show',
       data: {
-        linkSlug: this.get('linkSlug'),
-        productID: this.get('productID')
+        linkSlug: this.get('Slug'),
+        productID: this.get('AmazonID')
       },
       dataType: 'JSON',
       success: _.bind(function (data) {
         var review;
         if (data === null) {
-          review = { reviewDate: 'n/a', review: '(unable to retrieve)' }
+          review = { Date: 'n/a', Text: '(unable to retrieve)' }
         } else {
-          review = _.extend({}, data, { 'reviewDate': moment(data.Date).format('MMMM Do YYYY') })
+          review = _.extend({}, data, { 'Date': moment(data.Date).format('MMMM Do YYYY') })
         }
-        this.set({ 'review': review })
+        this.set(review)
       }, this),
       error: _.bind(function (jqXhr, textStatus, errorThrown) {
         // Unusual, null review fetched.
         if (jqXhr.status === 200) {
-          review = { reviewDate: 'n/a', review: '(unable to retrieve)' }
+          review = { Date: 'n/a', Text: '(unable to retrieve)' }
           this.set({ 'review': review })
         }
       }, this),
@@ -79,13 +79,13 @@ var ProductView = Backbone.View.extend({
 
   render: function () {
     this.$el.empty()
-    if (typeof(this.model.get('review')) !== 'undefined') {
-      this.$el.append($('<td><span class="product-name">' + this.model.get('name') + '</span><br/> ' + this.model.get('review').review + '</td><td>' + this.model.get('review').reviewDate + '</td>'))
+    if (typeof(this.model.get('Text')) !== 'undefined') {
+      this.$el.append($('<td><span class="product-name">' + this.model.get('Name') + '</span><br/> ' + this.model.get('Text') + '</td><td>' + this.model.get('Date') + '</td>'))
     } else {
-      this.$el.append($('<td>' + this.model.get('name') + '</td><td></td>'))
+      this.$el.append($('<td>' + this.model.get('Name') + '</td><td></td>'))
     }
 
-    this.$el.append($('<td><a href="https://www.amazon.com/' + this.model.get('linkSlug') + "/dp/" + this.model.get('productID') + '" target="_blank">Visit</a>'))
+    this.$el.append($('<td><a href="https://www.amazon.com/' + this.model.get('Slug') + "/dp/" + this.model.get('AmazonID') + '" target="_blank">Visit</a>'))
     return this
   }
 })
