@@ -42,6 +42,7 @@ CREATE TABLE "Review" (
   "UserID" INT FOREIGN KEY REFERENCES "User"(ID) NOT NULL
 );
 
+DELETE FROM Review
 SELECT ID, Email, VendorID FROM "User" 
 
 SELECT ID, Name, Date FROM Review

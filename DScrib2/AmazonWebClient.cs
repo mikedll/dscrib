@@ -125,10 +125,13 @@ namespace DScrib2
             if (dateEl != null)
             {
                 var reviewDateStr = dateEl.TextContent;
-                if (reviewDateStr.StartsWith("on "))
+                if(reviewDateStr != "")
                 {
+                    // Sometimes the date is preceded with "on " if the reviewer identity is known.
+                    // Sometimes this isn't the case.
+                    var dateNoDecor = reviewDateStr.StartsWith("on ") ? reviewDateStr.Substring(3) : reviewDateStr;
                     CultureInfo enUs = new CultureInfo("en-US");
-                    if (!DateTime.TryParseExact(reviewDateStr.Substring(3), "MMMM d, yyyy", enUs, DateTimeStyles.None, out reviewDate))
+                    if (!DateTime.TryParseExact(dateNoDecor, "MMMM d, yyyy", enUs, DateTimeStyles.None, out reviewDate))
                     {
                         reviewDate = DateTime.Now;
                     }
