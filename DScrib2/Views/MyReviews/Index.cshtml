@@ -1,0 +1,10 @@
+﻿@section head
+{
+  <script type="text/javascript">
+      __bootstrap = @Html.Raw(Json.Encode(ViewBag.Reviews));
+  </script>
+}
+
+<div class="app-container">
+  <div class="reviews-app"></div>
+</div>

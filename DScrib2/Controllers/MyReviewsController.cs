@@ -1,0 +1,35 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using DScrib2.Models;
+
+namespace DScrib2.Controllers
+{
+    public class MyReviewsController : Controller
+    {
+
+        public ActionResult Index()
+        {
+            if (Session["userID"] == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                return null;
+            }
+
+            var db = new DbWrapper();
+            var user = db.GetUser((int)Session["userID"]);
+            if (user == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                return null;
+            }
+
+
+            ViewBag.Reviews = db.GetReviewsForUser(user);
+            return View();
+        }
+    }
+}

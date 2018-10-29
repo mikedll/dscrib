@@ -44,7 +44,7 @@ CREATE TABLE "Review" (
 
 SELECT ID, Email, VendorID FROM "User" 
 
-SELECT ID, Name FROM Review
+SELECT ID, Name, Date FROM Review
 
 INSERT INTO "User" (Email, VendorID) VALUES ('sam@example.com', '12345');
 INSERT INTO "User" (Email, VendorID) VALUES ('sam@example.com', '123456');

@@ -72,6 +72,30 @@ namespace DScrib2.Models
             return found;
         }
 
+        private List<T> GetMany<T>(string sql, Action<SqlCommand> paramsAdder, Func<SqlDataReader, T> builder)
+        {
+            List<T> returning = new List<T>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(sql, connection);
+                paramsAdder(command);
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    while(reader.Read()) returning.Add(builder(reader));
+                }
+                catch (Exception)
+                {
+                    // Log error?
+                    throw;
+                }
+            }
+
+            return returning;
+        }
+
         public User CreateUser(User user)
         {
             var newID = SaveOne("\"User\" (Email, VendorID) OUTPUT INSERTED.ID VALUES (@email, @vendorID)", (cmd) =>
@@ -104,6 +128,26 @@ namespace DScrib2.Models
             {
                 cmd.Parameters.AddWithValue("@slug", linkSlug);
                 cmd.Parameters.AddWithValue("@amazonID", productID);
+            }, (reader) =>
+            {
+                return new Review
+                {
+                    ID = reader.GetInt32(0),
+                    Name = reader.GetString(1),
+                    Text = reader.GetString(2),
+                    Date = reader.GetDateTime(3),
+                    Slug = reader.GetString(4),
+                    AmazonID = reader.GetString(5),
+                    UserID = reader.GetInt32(6)
+                };
+            });
+        }
+
+        public List<Review> GetReviewsForUser(User user)
+        {
+            return GetMany("SELECT ID, Name, Text, Date, Slug, AmazonID, UserID FROM Review WHERE UserID = @userID", (cmd) =>
+            {
+                cmd.Parameters.AddWithValue("@userID", user.ID);
             }, (reader) =>
             {
                 return new Review

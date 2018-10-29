@@ -32,6 +32,12 @@ namespace DScrib2
             );
 
             routes.MapRoute(
+                name: "MyReviews",
+                url: "me/reviews",
+                defaults: new { controller = "MyReviews", action = "Index" }
+            );
+
+            routes.MapRoute(
                 name: "Defaults",
                 url: "{controller}/{action}"
             );

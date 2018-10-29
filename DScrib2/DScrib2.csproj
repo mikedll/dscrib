@@ -146,6 +146,7 @@
   <ItemGroup>
     <Compile Include="AmazonWebClient.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MyReviewsController.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Controllers\ReviewsController.cs" />
     <Compile Include="Controllers\SessionsController.cs" />
@@ -168,6 +169,7 @@
     <Content Include="Views\Home\YourEmail.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\MyReviews\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
