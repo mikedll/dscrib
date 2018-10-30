@@ -58,7 +58,7 @@ namespace DScrib2.Controllers
             Session["userID"] = user.ID;
 
             // Should be able to insert this into SQL Server.
-            return Json(user); ;
+            return Content(JsonConvert.SerializeObject(user), "application/json");
         }
     }
 }

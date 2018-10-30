@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using DScrib2.Models;
+using Newtonsoft.Json;
 
 namespace DScrib2
 {
@@ -48,7 +49,7 @@ namespace DScrib2
             if (!RequireAmazonClient()) return null;
 
             var review = db.Reviews.FirstOrDefault(r => r.Slug == linkSlug && r.AmazonID == productID);
-            if(review != null) return Json(review, JsonRequestBehavior.AllowGet);
+            if(review != null) return Content(JsonConvert.SerializeObject(review), "application/json");
 
             var result = client.GetReview(linkSlug, productID);
             if (result == null)
@@ -69,7 +70,7 @@ namespace DScrib2
             db.Reviews.Add(review);
             db.SaveChanges();
 
-            return Json(review, JsonRequestBehavior.AllowGet);
+            return Content(JsonConvert.SerializeObject(review), "application/json");
         }
 
         public ActionResult Index(string q)

@@ -1,7 +1,9 @@
-﻿@section head
+﻿@using Newtonsoft.Json
+
+@section head
 {
   <script type="text/javascript">
-      __bootstrap = @Html.Raw(Json.Encode(ViewBag.Reviews));
+      __bootstrap = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Reviews));
   </script>
 }
 
