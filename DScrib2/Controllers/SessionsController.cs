@@ -8,14 +8,22 @@ using System.Web.Mvc;
 using Google.Apis.Auth;
 using Newtonsoft.Json;
 using DScrib2.Models;
+using System.Net;
 
 namespace DScrib2.Controllers
 {
     public class SessionsController : Controller
     {
+        private AppDbContext db = new AppDbContext();
+
         public async Task<ActionResult> TokenLogin()
         {
             var idToken = Request["idToken"];
+            if (idToken == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return null;
+            }
 
             // Probably should use Auth class from Google lib.
             var jsonContents = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "credentials.json"));
@@ -39,12 +47,12 @@ namespace DScrib2.Controllers
                 return null;
             }
 
-            DbWrapper dbWrapper = new DbWrapper();
-            var user = dbWrapper.GetUserByVendorID(subject);
+            var user = db.Users.FirstOrDefault(u => u.VendorID == subject);
             if(user == null)
             {
                 var newUser = new User() { Email = email, VendorID = subject };
-                user = dbWrapper.CreateUser(newUser);
+                db.Users.Add(newUser);
+                db.SaveChanges();
             }
 
             Session["userID"] = user.ID;

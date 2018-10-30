@@ -9,7 +9,7 @@ namespace DScrib2
     public class ReviewsController : Controller
     {
         private AmazonWebClient client;
-        private DbWrapper db;
+        private AppDbContext db = new AppDbContext();
         private User user;
 
         private bool RequireUserAndDb()
@@ -22,8 +22,7 @@ namespace DScrib2
                 return false;
             }
 
-            db = new DbWrapper();
-            user = db.GetUser((int)Session["userID"]);
+            user = db.Users.Find((int)Session["userID"]);
             if (user == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.Forbidden;
@@ -48,7 +47,7 @@ namespace DScrib2
             if (!RequireUserAndDb()) return null;
             if (!RequireAmazonClient()) return null;
 
-            var review = db.GetReview(linkSlug, productID);
+            var review = db.Reviews.FirstOrDefault(r => r.Slug == linkSlug && r.AmazonID == productID);
             if(review != null) return Json(review, JsonRequestBehavior.AllowGet);
 
             var result = client.GetReview(linkSlug, productID);
@@ -67,7 +66,8 @@ namespace DScrib2
                 AmazonID = productID,
                 UserID = user.ID
             };
-            review = db.SaveReview(review);
+            db.Reviews.Add(review);
+            db.SaveChanges();
 
             return Json(review, JsonRequestBehavior.AllowGet);
         }

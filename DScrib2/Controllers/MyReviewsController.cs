@@ -10,6 +10,7 @@ namespace DScrib2.Controllers
 {
     public class MyReviewsController : Controller
     {
+        private AppDbContext db = new AppDbContext();
 
         public ActionResult Index()
         {
@@ -19,8 +20,7 @@ namespace DScrib2.Controllers
                 return null;
             }
 
-            var db = new DbWrapper();
-            var user = db.GetUser((int)Session["userID"]);
+            var user = db.Users.Find((int)Session["userID"]);
             if (user == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.Forbidden;
@@ -28,7 +28,7 @@ namespace DScrib2.Controllers
             }
 
 
-            ViewBag.Reviews = db.GetReviewsForUser(user);
+            ViewBag.Reviews = user.Reviews;
             return View();
         }
     }

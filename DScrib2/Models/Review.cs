@@ -11,5 +11,7 @@ namespace DScrib2.Models
         public string Slug { get; set; }
         public string AmazonID { get; set; }
         public int UserID { get; set; }
+
+        public virtual User User { get; set; }
     }
 }
