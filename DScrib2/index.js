@@ -12,11 +12,31 @@ var Product = Backbone.Model.extend({
   busy: false,
   formattedDate: null,
 
+  initialize: function () {
+    Backbone.Model.prototype.initialize.apply(this, arguments)
+    this.listenTo(this, 'request', this.onRequest)
+    this.listenTo(this, 'sync', this.onSync)
+    this.listenTo(this, 'error', this.onError)
+  },
+
+  onRequest: function() { this.busy = true },
+
+  onSync: function () {
+    this.busy = false
+
+    if (this.get('Unsave')) {
+      this.unset('Unsave', {silent: true})
+      this.unset('ID')
+    }
+  },
+
+  onError: function() { this.busy = false },
+
   // id (from link), name, link-pretty-part (pretty part, ID part), a review
   // id may eventually come from our database.
   fetchReview: function () {
     if (this.busy || this.isRetrieved()) return;
-    this.busy = true;
+
     this.trigger('request')
     $.get({
       url: '/reviews/fetch',
@@ -28,13 +48,11 @@ var Product = Backbone.Model.extend({
       success: _.bind(function (data) {
         var review = ((data === null) ? { Date: 'n/a', Text: '(unable to retrieve)' } : data)
         this.set(review)
-        this.busy = false
         this.trigger('sync')
       }, this),
       error: _.bind(function (jqXhr, textStatus, errorThrown) {
         review = { Date: 'n/a', Text: '(unable to retrieve)' }
         this.set(review)
-        this.busy = false
         this.trigger('error')
       }, this)
     })
@@ -118,53 +136,50 @@ var ProductView = Backbone.View.extend({
   },
 
   onRequest: function () {
-    this.busy = true
     this.lastError = ""
     this.render()
   },
 
   onSync: function () {
-    this.busy = false
     this.render()
   },
 
   onError: function () {
-    this.busy = false
     this.lastError = "An error occured while fetching information."
     this.render()
   },
 
   render: function () {
     this.$el.empty()
-    if (this.busy) {
-      this.$el.append($('<td>' + this.model.get('Name') + ' <i class="fas fa-spinner fa-spin"></i></td><td></td>'))
-    } else {
-      var nameStr = '<span class="product-name">' + this.model.get('Name') + '</span>';
-      var persistLinks = (typeof (this.model.get('ID')) !== 'undefined' ? ' <i class="fas fa-star delete-action"></i>' : ' <i class="far fa-star save-action"></i>')
-      var dateStr = '<td>' + this.model.getFormattedDate() + '</td>'
-      if (typeof (this.model.get('Text')) !== 'undefined') {
-        if (!this.folded) {
-          this.$el.append($('<td>'
-            + nameStr
-            + persistLinks
-            + '<br/>' + this.model.get('Text')
-            + '</td>'
-            + dateStr
-          ))
-        } else {
-          this.$el.append($('<td>'
-            + nameStr
-            + persistLinks
-            + '</td>'
-            + dateStr
-          ))
-        }
+
+    var nameStr = '<span class="product-name">' + this.model.get('Name') + '</span>';
+    var statusIcons = (typeof (this.model.get('ID')) !== 'undefined' ? ' <i class="fas fa-star delete-action action" area-label="Forget this review"></i>' : ' <i class="far fa-star save-action action"  area-label="Save this review"></i>')
+     + (this.model.busy ? '  <i class="fas fa-spinner fa-spin"></i>' : '')
+    var dateStr = '<td>' + this.model.getFormattedDate() + '</td>'
+
+    if (typeof (this.model.get('Text')) !== 'undefined') {
+      if (!this.folded) {
+        this.$el.append($('<td>'
+          + nameStr
+          + statusIcons
+          + '<br/>' + this.model.get('Text')
+          + '</td>'
+          + dateStr
+        ))
       } else {
-        this.$el.append($('<td>' + nameStr 
-          + '</td><td></td>')
-        )
+        this.$el.append($('<td>'
+          + nameStr
+          + statusIcons
+          + '</td>'
+          + dateStr
+        ))
       }
+    } else {
+      this.$el.append($('<td>' + nameStr 
+        + '</td><td></td>')
+      )
     }
+
     this.$el.append($('<td><a href="https://www.amazon.com/' + this.model.get('Slug') + "/dp/" + this.model.get('AmazonID') + '" target="_blank">Visit</a></td>'))
     return this
   }
