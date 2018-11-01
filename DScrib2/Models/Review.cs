@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace DScrib2.Models
 {
@@ -16,6 +17,7 @@ namespace DScrib2.Models
         [NotMapped]
         public bool Unsave { get; set; }
 
+        [JsonIgnore]
         public virtual User User { get; set; }
     }
 }

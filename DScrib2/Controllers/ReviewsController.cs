@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -57,33 +58,26 @@ namespace DScrib2
                 return null;
             }
 
-            if (Request["Unsave"] != null)
+            if (TryUpdateModel(review, new string[] { "Name", "Text", "Date", "Slug", "AmazonID", "Unsave" }))
             {
                 try
                 {
-                    user.Reviews.Remove(review);
+                    if (review.Unsave)
+                    {
+                        // was modified; change to deleted.
+                        db.Entry(review).State = EntityState.Deleted;
+                    }
                     db.SaveChanges();
                 }
                 catch (DataException)
                 {
                     Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    // Log error?
+                    return null;
                 }
             } else
             {
-                if(TryUpdateModel(review, "", new string[] { "Name", "Text", "Date", "Slug", "AmazonID" }))
-                {
-                    try
-                    {
-                        db.SaveChanges();
-                    }
-                    catch (DataException)
-                    {
-                        Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        // ? 
-                        // ModelState.AddModelError("Unable to save.");
-                    }
-                }
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return null;
             }
 
             return Content(JsonConvert.SerializeObject(review), "application/json");

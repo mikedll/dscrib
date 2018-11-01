@@ -41,8 +41,7 @@ var Product = Backbone.Model.extend({
   },
 
   unsave: function () {
-    this.set({ 'Unsaved': true })
-    this.save()
+    this.save({'Unsave': true})
   },
 
   isRetrieved: function () {
