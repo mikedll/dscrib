@@ -227,11 +227,6 @@ var Explorer = Backbone.View.extend({
     )
     searchForm.find('input[name=search]').val(this.search)
 
-    var menu = null;
-    if (this.loggedIn === true) {
-      menu = $('<div><a href="/me/reviews">Your Saved Reviews</a></div>')
-    }
-
     var tableArea = null
     if (!this.searching && this.results.length > 0) {
       var tableArea = $(
@@ -250,7 +245,6 @@ var Explorer = Backbone.View.extend({
     this.$el.empty()
     this.$el.append(infoBox)
     this.$el.append(searchForm)
-    this.$el.append(menu)
     this.$el.append(tableArea)
     return this
   },
@@ -283,22 +277,29 @@ var ReviewsView = Backbone.View.extend({
   },
 
   render: function () {
-    var link = $('<div><a href="/">Home</a></div>')
-    var table = $('<table class="table table-bordered"><thead class="thead-dark"><tr><th>Product</th><th>Review Date</th><th>Link</th></tr></thead><tbody></tbody></table>');
-    var tbody = table.find('tbody');
-    this.reviews.each(function (pi) {
-      tbody.append(pi.getFoldedView().el);
-    })
+
+    var tableArea = null
+    if (this.reviews.length > 0) {
+      tableArea = $('<table class="table table-bordered"><thead class="thead-dark"><tr><th>Product</th><th>Review Date</th><th>Link</th></tr></thead><tbody></tbody></table>');
+      var tbody = tableArea.find('tbody');
+      this.reviews.each(function (pi) {
+        tbody.append(pi.getFoldedView().el);
+      })
+    } else {
+      tableArea = $('<div>No saved reviews.</div>')
+    }
 
     this.$el.empty()
-    this.$el.append(link)
-    this.$el.append(table)
+    this.$el.append(tableArea)
     return this
   }
 })
 /********** Boot the App *********/
 
 $(function () {
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  })
 
   if (location.pathname === '/' || location.pathname === '/Home/Index') {
     gExplorer = new Explorer({

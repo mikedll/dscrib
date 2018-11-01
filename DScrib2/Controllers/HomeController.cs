@@ -18,11 +18,7 @@ namespace DScrib2.Controllers
 
             if(cred == null)
             {
-                var jsonContents = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "credentials.json"));
-                cred = JsonConvert.DeserializeObject<GoogleCredentialConfig>(jsonContents);
             }
-
-            ViewBag.ClientID = cred.Web.ClientID;
 
             return View();
         }

@@ -153,6 +153,7 @@
     <Compile Include="AmazonWebClient.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MyReviewsController.cs" />
+    <Compile Include="HandleGSecretFilter.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Controllers\ReviewsController.cs" />
     <Compile Include="Controllers\SessionsController.cs" />
