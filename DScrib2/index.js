@@ -122,8 +122,8 @@ var Products = Backbone.Collection.extend({
 var Explorer = Backbone.View.extend({
 
   events: {
-    'change input[name=search]': 'onSearchChange',
-    'keyup input[name=search]': 'onKeyUp'
+    'keyup input[name=search]': 'onSearchKeyUp',
+    'submit form.search-form': 'onSearch',
   },
 
   search: "",
@@ -143,6 +143,10 @@ var Explorer = Backbone.View.extend({
     this.listenTo(this.results, 'reset', this.onResultsChanged)
   },
 
+  onSearchKeyUp: function (e) {
+    this.search = e.target.value;
+  },
+
   ensureLoggedIn: function () {
     if (UserIdToken !== null && !this.loggedIn) {
       $.ajax({
@@ -157,7 +161,6 @@ var Explorer = Backbone.View.extend({
             this.userID = data.ID;
             this.loggedIn = true;
             this.render()
-            this.ready()
           } else {
             this.lastError = "A very unexpected error occurred while trying to log you in. This is likely a bug. ☹"
             this.render()
@@ -171,42 +174,43 @@ var Explorer = Backbone.View.extend({
     }
   },
 
-  onSearchChange: function(e) {
-    this.search = e.target.value;
-  },
-
   onResultsChanged: function (e) {
     this.render();
   },
   
-  onKeyUp: function(e) {    
-    if (e.keyCode === KeyCodes.ENTER) {
-      e.preventDefault()
-      this.lastError = null;
+  onSearch: function(e) {    
+    e.preventDefault()
+    this.lastError = null;
 
-      if (!this.loggedIn) {
-        this.lastError = "You must be logged in to use this feature.";
-        this.render()
-        return;
-      }
-
-      this.searching = true
-      this.results.reset()
-      $.get({
-        url: '/search',
-        data: {
-          q: e.target.value
-        },
-        dataType: 'JSON',
-        success: _.bind(function (data) {
-          this.searching = false
-          this.results.reset(data);
-        }, this)
-      })
+    if (!this.loggedIn) {
+      this.lastError = "You must be logged in to use this feature.";
+      this.render()
+      return;
     }
+
+    this.searching = true
+    this.results.reset()
+    $.get({
+      url: '/search',
+      data: {
+        q: this.search
+      },
+      dataType: 'JSON',
+      success: _.bind(function (data) {
+        this.searching = false
+        this.results.reset(data); // will call render...kinda weird.
+      }, this),
+      error: _.bind(function () {
+        this.searching = false
+        this.lastError = "An error occurred while searching."
+        this.render()
+      }, this)
+    })
+    this.render()
   },
 
   render: function () {
+
     var infoBox = ""
     if (this.lastError !== null) {
       infoBox = $('<div class="alert alert-danger primary-error role="alert">' + this.lastError + '</div>')
@@ -214,7 +218,14 @@ var Explorer = Backbone.View.extend({
       infoBox = $('<div class="alert alert-warning" role="alert">You must be logged in to use this site.</div>')
     }
 
-    var searchBoxArea = $('<input type="text" name="search" placeholder="Product to Search For"  value="alexa"/>')
+    var searchForm = $('<form class="form-inline search-form">'
+      + '<fieldset ' + (this.searching ? 'disabled' : '') + '>'
+      + '<input type="text" name="search" placeholder="Product to Search For" class="form-control mb-2 mr-sm-2"/>'
+      + '<button type="submit" class="btn btn-primary mb-2">Search</button>'
+      + '</fieldset></form>'
+    )
+    searchForm.find('input[name=search]').val(this.search)
+
     var menu = null;
     if (this.loggedIn === true) {
       menu = $('<div><a href="/me/reviews">Your Saved Reviews</a></div>')
@@ -241,7 +252,7 @@ var Explorer = Backbone.View.extend({
 
     this.$el.empty()
     this.$el.append(infoBox)
-    this.$el.append(searchBoxArea)
+    this.$el.append(searchForm)
     this.$el.append(menu)
     this.$el.append(table)
     return this
@@ -249,7 +260,14 @@ var Explorer = Backbone.View.extend({
 
   ready: function() {
     this.$('input[name=search]').focus()
-  } 
+  },
+
+  prepare: function () {
+    this.render()
+    if (this.loggedIn) {
+      this.ready()
+    }
+  }
 })
 
 function onSignIn(googleUser) {
@@ -290,7 +308,7 @@ $(function () {
       el: $('.main-app').first(),
       userID: __userID
     })
-    gExplorer.render()
+    gExplorer.prepare()
   } else if (location.pathname === '/me/reviews') {
     var rv = new ReviewsView({
       el: $('.reviews-app').first(),
