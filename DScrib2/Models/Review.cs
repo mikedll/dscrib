@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DScrib2.Models
 {
@@ -11,6 +12,9 @@ namespace DScrib2.Models
         public string Slug { get; set; }
         public string AmazonID { get; set; }
         public int UserID { get; set; }
+
+        [NotMapped]
+        public bool Unsave { get; set; }
 
         public virtual User User { get; set; }
     }

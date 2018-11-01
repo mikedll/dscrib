@@ -6,6 +6,7 @@ var KeyCodes = {
 }
 
 var Product = Backbone.Model.extend({
+  idAttribute: "ID",
   view: null,
   foldedView: null,
   busy: false,
@@ -16,8 +17,9 @@ var Product = Backbone.Model.extend({
   fetchReview: function () {
     if (this.busy || this.isRetrieved()) return;
     this.busy = true;
+    this.trigger('request')
     $.get({
-      url: '/reviews/show',
+      url: '/reviews/fetch',
       data: {
         linkSlug: this.get('Slug'),
         productID: this.get('AmazonID')
@@ -26,15 +28,21 @@ var Product = Backbone.Model.extend({
       success: _.bind(function (data) {
         var review = ((data === null) ? { Date: 'n/a', Text: '(unable to retrieve)' } : data)
         this.set(review)
+        this.busy = false
+        this.trigger('sync')
       }, this),
-      error: _.bind(function (jqXhr, textStatus, errorThrown) {        
+      error: _.bind(function (jqXhr, textStatus, errorThrown) {
         review = { Date: 'n/a', Text: '(unable to retrieve)' }
         this.set(review)
-      }, this),
-      complete: _.bind(function () {
         this.busy = false
+        this.trigger('error')
       }, this)
     })
+  },
+
+  unsave: function () {
+    this.set({ 'Unsaved': true })
+    this.save()
   },
 
   isRetrieved: function () {
@@ -69,14 +77,21 @@ var Product = Backbone.Model.extend({
 var ProductView = Backbone.View.extend({
   tagName: 'tr',
 
+  busy: false,
+
   events: {
-    'click': 'onToggle'
+    'click span.product-name': 'onToggle',
+    'click i.save-action': 'onSaveRequest',
+    'click i.delete-action': 'onDestroyRequest'
   },
 
   initialize: function (opts) {
     Backbone.View.prototype.initialize.apply(this, arguments);
     this.folded = (opts.folded === true)
     this.listenTo(this.model, 'change', this.onChange)
+    this.listenTo(this.model, 'error', this.onError)
+    this.listenTo(this.model, 'sync', this.onSync)
+    this.listenTo(this.model, 'request', this.onRequest)
   },
 
   onToggle: function () {
@@ -91,28 +106,73 @@ var ProductView = Backbone.View.extend({
     }    
   },
 
+  onSaveRequest: function () {
+    this.model.save()
+  },
+
+  onDestroyRequest: function () {
+    this.model.unsave()
+  },
+
   onChange: function () {
+    this.render()
+  },
+
+  onRequest: function () {
+    this.busy = true
+    this.lastError = ""
+    this.render()
+  },
+
+  onSync: function () {
+    this.busy = false
+    this.render()
+  },
+
+  onError: function () {
+    this.busy = false
+    this.lastError = "An error occured while fetching information."
     this.render()
   },
 
   render: function () {
     this.$el.empty()
-    if (typeof (this.model.get('Text')) !== 'undefined') {
-      if (!this.folded) {
-        this.$el.append($('<td><span class="product-name">' + this.model.get('Name') + '</span><br/> ' + this.model.get('Text') + '</td><td>' + this.model.getFormattedDate() + '</td>'))
-      } else {
-        this.$el.append($('<td>' + this.model.get('Name') + '</td><td>' + this.model.getFormattedDate() + '</td>'))
-      }
+    if (this.busy) {
+      this.$el.append($('<td>' + this.model.get('Name') + ' <i class="fas fa-spinner fa-spin"></i></td><td></td>'))
     } else {
-      this.$el.append($('<td>' + this.model.get('Name') + '</td><td></td>'))
+      var nameStr = '<span class="product-name">' + this.model.get('Name') + '</span>';
+      var persistLinks = (typeof (this.model.get('ID')) !== 'undefined' ? ' <i class="fas fa-star delete-action"></i>' : ' <i class="far fa-star save-action"></i>')
+      var dateStr = '<td>' + this.model.getFormattedDate() + '</td>'
+      if (typeof (this.model.get('Text')) !== 'undefined') {
+        if (!this.folded) {
+          this.$el.append($('<td>'
+            + nameStr
+            + persistLinks
+            + '<br/>' + this.model.get('Text')
+            + '</td>'
+            + dateStr
+          ))
+        } else {
+          this.$el.append($('<td>'
+            + nameStr
+            + persistLinks
+            + '</td>'
+            + dateStr
+          ))
+        }
+      } else {
+        this.$el.append($('<td>' + nameStr 
+          + '</td><td></td>')
+        )
+      }
     }
-
-    this.$el.append($('<td><a href="https://www.amazon.com/' + this.model.get('Slug') + "/dp/" + this.model.get('AmazonID') + '" target="_blank">Visit</a>'))
+    this.$el.append($('<td><a href="https://www.amazon.com/' + this.model.get('Slug') + "/dp/" + this.model.get('AmazonID') + '" target="_blank">Visit</a></td>'))
     return this
   }
 })
 
 var Products = Backbone.Collection.extend({
+  url: '/reviews',
   model: Product
 })
 

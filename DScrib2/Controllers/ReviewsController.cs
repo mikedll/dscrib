@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -13,7 +14,7 @@ namespace DScrib2
         private AppDbContext db = new AppDbContext();
         private User user;
 
-        private bool RequireUserAndDb()
+        private bool RequireUser()
         {
             if (user != null && db != null) return true;
 
@@ -37,15 +38,81 @@ namespace DScrib2
         {
             if (client != null) return true;
 
-            if (!RequireUserAndDb()) return false;
+            if (!RequireUser()) return false;
 
             client = new AmazonWebClient(user.Email);
             return true;
         }
 
-        public ActionResult Show(string linkSlug, string productID)
+        [HttpPut]
+        // [ValidateAntiForgeryToken]
+        public ActionResult Update(int id)
         {
-            if (!RequireUserAndDb()) return null;
+            if (!RequireUser()) return null;
+
+            var review = user.Reviews.FirstOrDefault(r => r.ID == id);
+            if(review == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
+                return null;
+            }
+
+            if (Request["Unsave"] != null)
+            {
+                try
+                {
+                    user.Reviews.Remove(review);
+                    db.SaveChanges();
+                }
+                catch (DataException)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    // Log error?
+                }
+            } else
+            {
+                if(TryUpdateModel(review, "", new string[] { "Name", "Text", "Date", "Slug", "AmazonID" }))
+                {
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (DataException)
+                    {
+                        Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        // ? 
+                        // ModelState.AddModelError("Unable to save.");
+                    }
+                }
+            }
+
+            return Content(JsonConvert.SerializeObject(review), "application/json");
+        }
+
+        [HttpPost]
+        // [ValidateAntiForgeryToken]
+        public ActionResult Create([Bind(Include= "Name, Text, Date, Slug, AmazonID")]Review review)
+        {
+            if (!RequireUser()) return null;
+
+            try
+            {
+                review.User = user;
+                db.Reviews.Add(review);
+                db.SaveChanges();   
+            }
+            catch (DataException)
+            {
+                // ? 
+                // ModelState.AddModelError("Unable to save.");
+            }
+
+            return Content(JsonConvert.SerializeObject(review), "application/json");
+        }
+
+        public ActionResult Fetch(string linkSlug, string productID)
+        {
+            if (!RequireUser()) return null;
             if (!RequireAmazonClient()) return null;
 
             var review = db.Reviews.FirstOrDefault(r => r.Slug == linkSlug && r.AmazonID == productID);
@@ -73,7 +140,7 @@ namespace DScrib2
             return Content(JsonConvert.SerializeObject(review), "application/json");
         }
 
-        public ActionResult Index(string q)
+        public ActionResult Search(string q)
         {
             if (!RequireAmazonClient()) return null;
 
@@ -82,5 +149,14 @@ namespace DScrib2
                 { "Slug", v.Item2 },
                 { "AmazonID", v.Item3 }}), JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult Index()
+        {
+            if (!RequireUser()) return null;
+
+            ViewBag.Reviews = user.Reviews;
+            return View();
+        }
+
     }
 }

@@ -12,24 +12,5 @@ namespace DScrib2.Controllers
     {
         private AppDbContext db = new AppDbContext();
 
-        public ActionResult Index()
-        {
-            if (Session["userID"] == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                return null;
-            }
-
-            var user = db.Users.Find((int)Session["userID"]);
-            if (user == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                return null;
-            }
-
-
-            ViewBag.Reviews = user.Reviews;
-            return View();
-        }
     }
 }
