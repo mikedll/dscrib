@@ -119,19 +119,16 @@ namespace DScrib2
                 return Json(null, JsonRequestBehavior.AllowGet);
             }
 
-            review = new Review
+            var unsavedReview = new
             {
                 Name = result.Item3,
                 Date = result.Item1,
                 Text = result.Item2,
                 Slug = linkSlug,
-                AmazonID = productID,
-                UserID = user.ID
+                AmazonID = productID
             };
-            db.Reviews.Add(review);
-            db.SaveChanges();
 
-            return Content(JsonConvert.SerializeObject(review), "application/json");
+            return Content(JsonConvert.SerializeObject(unsavedReview), "application/json");
         }
 
         public ActionResult Search(string q)
