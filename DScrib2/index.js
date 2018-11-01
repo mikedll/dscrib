@@ -221,7 +221,8 @@ var Explorer = Backbone.View.extend({
     var searchForm = $('<form class="form-inline search-form">'
       + '<fieldset ' + (this.searching ? 'disabled' : '') + '>'
       + '<input type="text" name="search" placeholder="Product to Search For" class="form-control mb-2 mr-sm-2"/>'
-      + '<button type="submit" class="btn btn-primary mb-2">Search</button>'
+      + '<button type="submit" class="btn btn-primary mb-2 mr-sm-2">Search</button>'
+      + (this.searching ? '<i class="fas fa-spinner fa-spin"></i>' : '')
       + '</fieldset></form>'
     )
     searchForm.find('input[name=search]').val(this.search)
@@ -231,30 +232,26 @@ var Explorer = Backbone.View.extend({
       menu = $('<div><a href="/me/reviews">Your Saved Reviews</a></div>')
     }
 
-    var table = $(
-      "<table class='table table-bordered'><thead class='thead-dark'>"
-      + '<tr><th>Product</th><th>Review Date</th><th>Link</th></tr>'
-      + '</thead><tbody>'
-      + '</tbody></table >'
-    );
+    var tableArea = null
+    if (!this.searching && this.results.length > 0) {
+      var tableArea = $(
+        "<table class='table table-bordered'><thead class='thead-dark'>"
+        + '<tr><th>Product</th><th>Review Date</th><th>Link</th></tr>'
+        + '</thead><tbody>'
+        + '</tbody></table >'
+      );
 
-    var tbody = table.find('tbody')
-    if (this.results.length > 0) {
-      var found = 0
+      var tbody = tableArea.find('tbody')
       this.results.each(function (pi) {
-        found += 1
         tbody.append(pi.getView().el)
       });
-      console.log("I think I added " + found + " records' views to the root view.")
-    } else if (this.searching) {
-      tbody.append($('<tr><td colspan="3">Searching...</td></tr>'));
     }
 
     this.$el.empty()
     this.$el.append(infoBox)
     this.$el.append(searchForm)
     this.$el.append(menu)
-    this.$el.append(table)
+    this.$el.append(tableArea)
     return this
   },
 
