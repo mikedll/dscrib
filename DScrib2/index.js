@@ -27,12 +27,9 @@ var Product = Backbone.Model.extend({
         var review = ((data === null) ? { Date: 'n/a', Text: '(unable to retrieve)' } : data)
         this.set(review)
       }, this),
-      error: _.bind(function (jqXhr, textStatus, errorThrown) {
-        // Unusual, null review fetched.
-        if (jqXhr.status === 200) {
-          review = { Date: 'n/a', Text: '(unable to retrieve)' }
-          this.set({ 'review': review })
-        }
+      error: _.bind(function (jqXhr, textStatus, errorThrown) {        
+        review = { Date: 'n/a', Text: '(unable to retrieve)' }
+        this.set(review)
       }, this),
       complete: _.bind(function () {
         this.busy = false
