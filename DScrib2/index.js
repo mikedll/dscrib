@@ -208,7 +208,8 @@ var Products = Backbone.Collection.extend({
 var Explorer = Backbone.View.extend({
 
   events: {
-    'keyup input[name=search]': 'onSearchKeyUp',
+    'change input[name=search]': 'onChange',
+    'keyup input[name=search]': 'onChange',
     'submit form.search-form': 'onSearch',
   },
 
@@ -229,7 +230,7 @@ var Explorer = Backbone.View.extend({
     this.listenTo(this.results, 'reset', this.onResultsChanged)
   },
 
-  onSearchKeyUp: function (e) {
+  onChange: function (e) {
     this.search = e.target.value;
   },
 

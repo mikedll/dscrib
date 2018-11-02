@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using AngleSharp.Parser.Html;
+using Ganss.XSS;
 
 namespace DScrib2
 {
@@ -141,9 +142,13 @@ namespace DScrib2
             var reviewWrapper = reviewEl.QuerySelector(".a-row .a-spacing-top-mini:last-child");
             var reviewNode = reviewWrapper.QuerySelector(".a-size-base");
             var review = "";
+            var san = new HtmlSanitizer();
+            san.AllowedTags.Clear();
+            san.AllowedTags.Add("br");
+            san.AllowedAttributes.Clear();
             if (reviewNode != null)
             {
-                review = reviewNode.TextContent;
+                review = san.Sanitize(reviewNode.InnerHtml);
             }
 
 
