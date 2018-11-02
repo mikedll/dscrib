@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using DScrib2.Filters;
 using DScrib2.Models;
 using Newtonsoft.Json;
 
@@ -46,7 +47,7 @@ namespace DScrib2
         }
 
         [HttpPut]
-        // [ValidateAntiForgeryToken]
+        [ValidateJsonAntiForgeryToken]
         public ActionResult Update(int id)
         {
             if (!RequireUser()) return null;
@@ -84,7 +85,7 @@ namespace DScrib2
         }
 
         [HttpPost]
-        // [ValidateAntiForgeryToken]
+        [ValidateJsonAntiForgeryToken]
         public ActionResult Create([Bind(Include= "Name, Text, Date, Slug, AmazonID")]Review review)
         {
             if (!RequireUser()) return null;

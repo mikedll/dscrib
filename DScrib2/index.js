@@ -97,7 +97,8 @@ var ProductView = Backbone.View.extend({
   busy: false,
 
   events: {
-    'click span.product-name': 'onToggle',
+    'click .review-body-toggle': 'onToggle',
+    'click .fetch-action': 'onFetch',
     'click i.save-action': 'onSaveRequest',
     'click i.delete-action': 'onDestroyRequest'
   },
@@ -111,10 +112,14 @@ var ProductView = Backbone.View.extend({
     this.listenTo(this.model, 'request', this.onRequest)
   },
 
+  onFetch: function (e) {
+    e.preventDefault()
+    this.model.fetchReview()
+    return false
+  },
+
   onToggle: function () {
-    if (!this.model.isRetrieved()) {
-      this.model.fetchReview();
-    } else if (this.folded) {
+    if (this.folded) {
       this.folded = false
       this.render()
     } else {
@@ -152,30 +157,38 @@ var ProductView = Backbone.View.extend({
   render: function () {
     this.$el.empty()
 
-    var nameStr = '<span class="product-name">' + this.model.get('Name') + '</span>';
-    var statusIcons = (typeof (this.model.get('ID')) !== 'undefined' ? ' <i class="fas fa-star delete-action action" area-label="Forget this review"></i>' : ' <i class="far fa-star save-action action"  area-label="Save this review"></i>')
-     + (this.model.busy ? '  <i class="fas fa-spinner fa-spin"></i>' : '')
+    var statusIcons = (typeof (this.model.get('ID')) !== 'undefined'
+      ? ' <i class="fas fa-star delete-action action" area-label="Forget this review" title="Forget this review"></i>'
+      : ' <i class="far fa-star save-action action" area-label="Save this review" title="Save this review"></i>')
+    var busyIcon = (this.model.busy ? ' <i class="fas fa-spinner fa-spin"></i>' : '')
     var dateStr = '<td>' + this.model.getFormattedDate() + '</td>'
 
-    if (typeof (this.model.get('Text')) !== 'undefined') {
+    if (this.model.isRetrieved()) {
       if (!this.folded) {
         this.$el.append($('<td>'
-          + nameStr
+          + '<span class="review-body-toggle" title="Hide Review">' + this.model.get('Name') + ' <i class="far fa-envelope-open"></i></span>'
           + statusIcons
+          + busyIcon
           + '<br/>' + this.model.get('Text')
           + '</td>'
           + dateStr
         ))
       } else {
         this.$el.append($('<td>'
-          + nameStr
+          + '<span class="review-body-toggle" title="Show Review">' + this.model.get('Name') + ' <i class="far fa-envelope"></i></span>'
           + statusIcons
+          + busyIcon
           + '</td>'
           + dateStr
         ))
       }
     } else {
-      this.$el.append($('<td>' + nameStr 
+      this.$el.append($('<td>'
+        + '<a href="#" class="fetch-action"  title="Fetch Review">'
+        + this.model.get('Name')
+        + ' <i class="far fa-envelope fetch-action"></i>'
+        + '</a>'
+        + busyIcon
         + '</td><td></td>')
       )
     }
@@ -368,6 +381,17 @@ var ReviewsView = Backbone.View.extend({
 /********** Boot the App *********/
 
 $(function () {
+
+
+  $(document).ready(function () {
+    var securityToken = $('form.csrf-token-form [name=__RequestVerificationToken]').val();
+    $(document).ajaxSend(function (event, jqXhr, opt) {
+      if ('type' in opt && opt.type !== 'GET') {
+        jqXhr.setRequestHeader('__RequestVerificationToken', securityToken)
+      }
+    });
+  });
+
   $(function () {
     $('[data-toggle="popover"]').popover()
   })

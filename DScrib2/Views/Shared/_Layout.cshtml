@@ -12,9 +12,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@("@")fortawesome/fontawesome-free@5.4.1/css/fontawesome.min.css">
 
   <style>
-    .product-name {
-      font-weight: bold;
-    }
 
     .footer {
       text-align: right;
@@ -25,6 +22,7 @@
       margin-bottom: 1rem;
     }
 
+    .review-body-toggle,
     .action {
       cursor: pointer;
     }
@@ -43,7 +41,9 @@
 
 </head>
 <body>
-  @Html.AntiForgeryToken()
+  <form class="csrf-token-form" action="#">
+    @Html.AntiForgeryToken()
+  </form>
   <nav class="navbar navbar-expand-sm navbar-light bg-light">
     <a class="navbar-brand" href="/">
       DScrib2
