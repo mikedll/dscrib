@@ -67,8 +67,10 @@ var Product = Backbone.Model.extend({
   },
 
   getFormattedDate: function () {
+    if (!this.has('Date')) return "";
+
     if (this.formattedDate === null) {
-      this.formattedDate = (this.get('Date') == 'n/a') ? 'n/a' : moment(this.get('Date')).format('MMMM Do YYYY')
+      this.formattedDate = (this.get('Date') === 'n/a') ? 'n/a' : moment(this.get('Date')).format('MMMM Do YYYY')
     }
 
     return this.formattedDate;

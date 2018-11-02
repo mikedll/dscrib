@@ -17,8 +17,8 @@ namespace Tester
         static void Main(string[] args)
         {
             var p = new Program();
-            // p.AmazonTest();
-            p.DbExec();
+            p.AmazonTest();
+            //p.DbExec();
         }
 
         public void AmazonTest()
@@ -26,13 +26,14 @@ namespace Tester
             // Tolerable to have a made-up email when debugging.
             var sc = new AmazonWebClient("testing@example.com");
 
-            var body = sc.GetTestReview(); // sc.GetReviewPage("Sandalwood-Patchouli-Different-Scents-Karma", "B06Y274RR8");
-            if (body == null)
-            {
-                Console.WriteLine("Got null response from GetReviewPage.");
-                return;
-            }
-            var results = sc.ParseSearch(body);
+            //var body = sc.GetTestReview();
+            var review = sc.GetReview("Sandalwood-Patchouli-Different-Scents-Karma", "B06Y274RR8");
+            //if (body == null)
+            //{
+            //    Console.WriteLine("Got null response from GetReviewPage.");
+            //    return;
+            //}
+            //var results = sc.ParseSearch(body);
 
             //var review = sc.GetReview("Eucalan-Lavender-Fine-Fabric-Ounce", "B001DEJMPG");
             //Console.WriteLine(review.Item1);
