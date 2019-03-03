@@ -302,5 +302,6 @@ $RECYCLE.BIN/
 *.lnk
 
 credentials.json
+notes.txt
 
 tmp/
