@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DScrib2.Models;
 
 namespace Tests
@@ -39,7 +40,7 @@ namespace Tests
         public void DbExec()
         {
             var db = new AppDbContext();
-            var user = db.Users.Sing(u => u.VendorID == "12345");
+            var user = db.Users.FirstOrDefault(u => u.VendorID == "12345");
             var user2 = db.Users.FirstOrDefault(u => u.VendorID == "12");
 
             if (user != null && user.ID == 1 && user2 == null)
