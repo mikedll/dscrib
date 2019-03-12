@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DScrib2.Filters

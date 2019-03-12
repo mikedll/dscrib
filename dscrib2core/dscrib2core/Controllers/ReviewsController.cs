@@ -3,11 +3,15 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.AspNetCore.Http;
 using DScrib2.Filters;
 using DScrib2.Models;
 using Newtonsoft.Json;
 using System;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace DScrib2
 {
@@ -53,8 +57,7 @@ namespace DScrib2
         }
 
         [HttpPut]
-        [ValidateJsonAntiForgeryToken]
-        public ActionResult Update(int id)
+        public async Task<ActionResult> Update(int id)
         {
             if (!RequireUser()) return null;
 
@@ -65,7 +68,8 @@ namespace DScrib2
                 return null;
             }
 
-            if (TryUpdateModel(review, new string[] { "Name", "Text", "Date", "Slug", "AmazonID", "Unsave" }))
+            // new string[] { "Name", "Text", "Date", "Slug", "AmazonID", "Unsave" }
+            if (await TryUpdateModelAsync<Review>(review, "", r => r.Name, r => r.Text, r => r.Date, r => r.Slug, r => r.AmazonID, r => r.Unsave))
             {
                 try
                 {
@@ -91,8 +95,7 @@ namespace DScrib2
         }
 
         [HttpPost]
-        [ValidateJsonAntiForgeryToken]
-        public ActionResult Create([Bind(Include= "Name, Text, Date, Slug, AmazonID")]Review review)
+        public ActionResult Create([Bind("Name, Text, Date, Slug, AmazonID")]Review review)
         {
             if (!RequireUser()) return null;
 
