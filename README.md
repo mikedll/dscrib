@@ -13,3 +13,9 @@ Tech used:
   - MVC 5
   - ASP.NET 4.6.1
 
+## Setup
+
+Copy `config.json.example` and fill in reasonable values.
+
+The `Tests` project should run without crashing and create new data in your database.
+
