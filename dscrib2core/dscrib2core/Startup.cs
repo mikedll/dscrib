@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace dscrib2core
+namespace DScrib2
 {
     public class Startup
     {
@@ -25,7 +25,10 @@ namespace dscrib2core
                 options.Cookie.HttpOnly = true;
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new HandleGSecretFilter());
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
         }
 
