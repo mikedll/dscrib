@@ -6,7 +6,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using DScrib2.Models;
+using System.IO;
 
 namespace DScrib2
 {
@@ -16,6 +20,14 @@ namespace DScrib2
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("config.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var dbConf = config["Data:connectionString"];
+
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConf));
 
             services.AddDistributedMemoryCache();
 
@@ -45,6 +57,19 @@ namespace DScrib2
 
             app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                    name: "Creates",
+                    template: "{controller}",
+                    defaults: new { action = "Create" }
+                );
+
+                routes.MapRoute(
+                    name: "Updates",
+                    template: "{controller}/{id}",
+                    defaults: new { action = "Update" },
+                    constraints: new { id = "\\d+" }
+                );
+
                 routes.MapRoute(
                     name: "default", template: "{controller=Home}/{action=Index}/{id?}");
             });
