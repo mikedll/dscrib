@@ -16,6 +16,15 @@ namespace dscrib2core
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                options.Cookie.HttpOnly = true;
+            });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
         }
@@ -27,6 +36,9 @@ namespace dscrib2core
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSession();
+            app.UseStaticFiles();
 
             app.UseMvc(routes =>
             {

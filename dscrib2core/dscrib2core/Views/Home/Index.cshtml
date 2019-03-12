@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@section head
+  {
+  <script type="text/javascript">
+    @if (@Context.Session.GetString("userID") != null)
+    {
+      @Html.Raw("__userID = " + @Context.Session.GetString("userID") + ";");
+    } else {
+      @Html.Raw("__userID = null;");
+    }
+  </script>
+}
+
+
+<div class="explain">
+  When you use this application, your email will be used to tell Amazon.com that you are
+  the one using this application to navigate its servers for information.
+  @Html.ActionLink("Read More", "YourEmail", "Home").
+</div>
+
+<div class="app-container">
+  <div class="main-app"></div>
+</div>

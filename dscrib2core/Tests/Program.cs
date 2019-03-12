@@ -4,7 +4,6 @@ using System.Linq;
 using DScrib2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.FileExtensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Tests
