@@ -304,4 +304,7 @@ $RECYCLE.BIN/
 credentials.json
 notes.txt
 
+# Ignore app configs holding sensitive data (connection string).
+config.json
+
 tmp/

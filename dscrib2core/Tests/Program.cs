@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using DScrib2.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.FileExtensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Tests
@@ -17,8 +20,15 @@ namespace Tests
 
         static void Main(string[] args)
         {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("config.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var dbConf = config["Data:connectionString"];
+
             var services = new ServiceCollection();
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer("Server=localhost;Database=DScrib2;Trusted_Connection = True;"));
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConf));
 
             var provider = services.BuildServiceProvider();
             var p = new Program(provider.GetService<AppDbContext>());
