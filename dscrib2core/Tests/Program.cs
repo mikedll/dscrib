@@ -1,14 +1,27 @@
 ﻿using System;
 using System.Linq;
 using DScrib2.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Tests
 {
     class Program
     {
+        private AppDbContext db;
+
+        public Program(AppDbContext dbCtx)
+        {
+            db = dbCtx;
+        }
+
         static void Main(string[] args)
         {
-            var p = new Program();
+            var services = new ServiceCollection();
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer("Server=localhost;Database=DScrib2;Trusted_Connection = True;"));
+
+            var provider = services.BuildServiceProvider();
+            var p = new Program(provider.GetService<AppDbContext>());
             // p.AmazonTest();
             p.DbExec();
         }
@@ -39,7 +52,6 @@ namespace Tests
 
         public void DbExec()
         {
-            var db = new AppDbContext();
             var user = db.Users.FirstOrDefault(u => u.VendorID == "12345");
             var user2 = db.Users.FirstOrDefault(u => u.VendorID == "12");
 
