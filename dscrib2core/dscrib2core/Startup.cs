@@ -29,6 +29,12 @@ namespace DScrib2
 
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConf));
 
+            services.AddAntiforgery(options =>
+            {
+                // Set Cookie properties using CookieBuilder properties†.
+                options.HeaderName = "X-CSRF-TOKEN-CUSTOM";
+            });
+
             services.AddDistributedMemoryCache();
 
             services.AddSession(options =>

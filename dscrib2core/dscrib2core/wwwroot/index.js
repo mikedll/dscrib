@@ -390,7 +390,7 @@ $(function () {
     var securityToken = $('form.csrf-token-form [name=__RequestVerificationToken]').val();
     $(document).ajaxSend(function (event, jqXhr, opt) {
       if ('type' in opt && opt.type !== 'GET') {
-        jqXhr.setRequestHeader('__RequestVerificationToken', securityToken)
+        jqXhr.setRequestHeader('X-CSRF-TOKEN-CUSTOM', securityToken)
       }
     });
   });

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.AspNetCore.Http;
-using DScrib2.Filters;
 using DScrib2.Models;
 using Newtonsoft.Json;
 using System;
@@ -57,7 +56,7 @@ namespace DScrib2
         }
 
         [HttpPut]
-        [ValidateJsonAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Update(int id)
         {
             if (!RequireUser()) return null;
@@ -96,7 +95,7 @@ namespace DScrib2
         }
 
         [HttpPost]
-        [ValidateJsonAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public ActionResult Create([FromBody][Bind("Name, Text, Date, Slug, AmazonID")]Review review)
         {
             if (!RequireUser()) return null;
