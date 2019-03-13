@@ -31,7 +31,6 @@ namespace DScrib2
 
             services.AddAntiforgery(options =>
             {
-                // Set Cookie properties using CookieBuilder properties†.
                 options.HeaderName = "X-CSRF-TOKEN-CUSTOM";
             });
 
