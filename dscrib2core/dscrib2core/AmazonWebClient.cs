@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using AngleSharp.Html.Parser;
 using Ganss.XSS;
 
@@ -33,7 +34,7 @@ namespace DScrib2
 
         private string ReadFile(string file)
         {
-            return File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../tmp/", file));
+            return File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../tmp/", file));
         }
 
         public string GetTestSearch()
@@ -175,27 +176,37 @@ namespace DScrib2
         {
             var doc = ParseDoc(body);
 
+            // Amazon gives different html and its hard to say which one will be coming.
             var sel1 = ".s-result-list .a-link-normal.s-access-detail-page";
             var sel2 = ".s-result-list h5 .a-link-normal";
+            var sel3 = ".s-result-list .s-result-item .a-link-normal";
 
-            // Amazon gives different html and its hard to say which one will be coming.
             var selMode = 1;
             var items = doc.QuerySelectorAll(sel1);
             if(items.Length == 0)
             {
                 selMode = 2;
                 items = doc.QuerySelectorAll(sel2);
+                if (items.Length == 0)
+                {
+                    selMode = 3;
+                    items = doc.QuerySelectorAll(sel3);
+                }
             }
 
             var results = new List<Tuple<string, string, string>>();
             // "/All-new-Echo-Dot-3rd-Gen/dp/B0792KTHKJ?keywords=alexa&qid=1540840135&sr=8-2&ref=sr_1_2"
             // Products look like this: https://www.amazon.com/Sandalwood-Patchouli-Different-Scents-Karma/dp/B06Y274RR8/
+            // or this, without the host "/Paper-Airplane-Editors-Publications-International/dp/1680225391"
             // There is a link-slug, a /dp/, and an external product ID string.
             var productUrlRegex = new Regex(@"http(s)?://www.amazon.com/([^/]+)/dp/([^/?]+)", RegexOptions.Compiled);
+            var productUrlRegex2 = new Regex(@"^/([^/]+)/dp/([^/?]+)", RegexOptions.Compiled);
+            var picassoUrlRegex = new Regex(@"^/gp/slredirect/picassoRedirect.html", RegexOptions.Compiled);
             foreach (var item in items)
             {
                 var link = item.GetAttribute("href");
 
+                // span works for both selMode 2 and 3.
                 var name = item.QuerySelector(selMode == 1 ? "h2" : "span").TextContent;
 
                 var match = productUrlRegex.Match(link);
@@ -203,6 +214,30 @@ namespace DScrib2
                 if (match.Success)
                 {
                     results.Add(new Tuple<string, string, string>(name, match.Groups[2].Value, match.Groups[3].Value));
+                }
+                else
+                {
+                    string relativeLink = "";
+                    // could be a "picassoRedirect" or relative link.
+                    // This is a different thing Amazon sometimes does.
+                    match = picassoUrlRegex.Match(link);
+                    if (match.Success)
+                    {
+                        // Picasso redirect.
+                        var uri = new Uri($"http://www.amazon.com{link}", UriKind.Absolute);
+                        relativeLink = HttpUtility.ParseQueryString(uri.Query).Get("url");
+                    }
+                    else
+                    {
+                        // Assuming is a relative link.
+                        relativeLink = link;
+                    }
+
+                    match = productUrlRegex2.Match(relativeLink);
+                    if (match.Success)
+                    {
+                        results.Add(new Tuple<string, string, string>(name, match.Groups[1].Value, match.Groups[2].Value));
+                    }
                 }
             }
             return results;

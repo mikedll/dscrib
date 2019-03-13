@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using DScrib2;
 using DScrib2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,33 +32,48 @@ namespace Tests
 
             var provider = services.BuildServiceProvider();
             var p = new Program(provider.GetService<AppDbContext>());
-            // p.AmazonTest();
-            p.DbExec();
+            //p.AmazonTest();
+            p.AmazonTestSearch();
+            // p.DbExec();
         }
 
-        //public void AmazonTest()
-        //{
-        //    // Tolerable to have a made-up email when debugging.
-        //    var sc = new AmazonWebClient("testing@example.com");
+        public void AmazonTestSearch()
+        {
+            // Tolerable to have a made-up email when debugging.
+            var sc = new AmazonWebClient("testing@example.com");
 
-        //    //var body = sc.GetTestReview();
-        //    var review = sc.GetReview("Sandalwood-Patchouli-Different-Scents-Karma", "B06Y274RR8");
-        //    //if (body == null)
-        //    //{
-        //    //    Console.WriteLine("Got null response from GetReviewPage.");
-        //    //    return;
-        //    //}
-        //    //var results = sc.ParseSearch(body);
+            var searchBody = sc.GetTestSearch();
+            if (searchBody == null)
+            {
+                Console.WriteLine("Error when retrieving test search.");
+                return;
+            }
+            var results = sc.ParseSearch(searchBody);
+        }
 
-        //    //var review = sc.GetReview("Eucalan-Lavender-Fine-Fabric-Ounce", "B001DEJMPG");
-        //    //Console.WriteLine(review.Item1);
-        //    //Console.WriteLine(review.Item2);
-        //    //var destFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sample-review.html");
-        //    //Console.WriteLine($"Writing {body.Length} characters to {AppDomain.CurrentDomain.BaseDirectory}");
-        //    //System.IO.File.WriteAllText(destFile, body, Encoding.UTF8);
+        public void AmazonTest()
+        {
+            // Tolerable to have a made-up email when debugging.
+            var sc = new AmazonWebClient("testing@example.com");
 
-        //    Console.WriteLine("Finished.");
-        //}
+            //var body = sc.GetTestReview();
+            //var review = sc.GetReview("Sandalwood-Patchouli-Different-Scents-Karma", "B06Y274RR8");
+            //if (body == null)
+            //{
+            //    Console.WriteLine("Got null response from GetReviewPage.");
+            //    return;
+            //}
+            //var results = sc.ParseSearch(body);
+
+            //var review = sc.GetReview("Eucalan-Lavender-Fine-Fabric-Ounce", "B001DEJMPG");
+            //Console.WriteLine(review.Item1);
+            //Console.WriteLine(review.Item2);
+            //var destFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sample-review.html");
+            //Console.WriteLine($"Writing {body.Length} characters to {AppDomain.CurrentDomain.BaseDirectory}");
+            //System.IO.File.WriteAllText(destFile, body, Encoding.UTF8);
+
+            Console.WriteLine("Finished.");
+        }
 
         public void DbExec()
         {
