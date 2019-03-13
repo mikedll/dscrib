@@ -57,6 +57,7 @@ namespace DScrib2
         }
 
         [HttpPut]
+        [ValidateJsonAntiForgeryToken]
         public async Task<ActionResult> Update(int id)
         {
             if (!RequireUser()) return null;
@@ -95,7 +96,8 @@ namespace DScrib2
         }
 
         [HttpPost]
-        public ActionResult Create([Bind("Name, Text, Date, Slug, AmazonID")]Review review)
+        [ValidateJsonAntiForgeryToken]
+        public ActionResult Create([FromBody][Bind("Name, Text, Date, Slug, AmazonID")]Review review)
         {
             if (!RequireUser()) return null;
 
