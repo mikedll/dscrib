@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using AngleSharp.Html.Parser;
+using AngleSharp.Parser.Html;
 using Ganss.XSS;
 
 namespace DScrib2
@@ -88,11 +88,10 @@ namespace DScrib2
             return body;
         }
 
-
-        private static AngleSharp.Html.Dom.IHtmlDocument ParseDoc(string body)
+        private static AngleSharp.Dom.Html.IHtmlDocument ParseDoc(string body)
         {
             var parser = new HtmlParser();
-            var doc = parser.ParseDocument(body);
+            var doc = parser.Parse(body);
             return doc;
         }
 
