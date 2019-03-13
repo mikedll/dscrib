@@ -126,7 +126,7 @@ namespace DScrib2
             if (result == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return Json(null, JsonRequestBehavior.AllowGet);
+                return Json(null);
             }
 
             var unsavedReview = new
@@ -148,7 +148,7 @@ namespace DScrib2
             return Json(client.Search(q).Select(v => new Dictionary<string, string>(){
                 { "Name", v.Item1 },
                 { "Slug", v.Item2 },
-                { "AmazonID", v.Item3 }}), JsonRequestBehavior.AllowGet);
+                { "AmazonID", v.Item3 }}));
         }
 
         public ActionResult Index()
