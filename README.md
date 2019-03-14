@@ -1,7 +1,7 @@
 
 ## DScrib2
 
-.NET web application to peruse Amazon.com product reviews. User emails are included in requests to Amazon
+ASP.NET Core application to peruse Amazon.com product reviews. User emails are included in requests to Amazon
 (since Amazon doesn't provide an API).
 
 ![alt text](https://github.com/mikedll/dscrib2/raw/d58704960f6edcc10e49bac7be892055e9774c92/sample.png)
