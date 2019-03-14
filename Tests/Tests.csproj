@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DScrib2\DSCrib2.csproj" />
+    <ProjectReference Include="..\DScrib2\DScrib2.csproj" />
   </ItemGroup>
 
   <ItemGroup>
