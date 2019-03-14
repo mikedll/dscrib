@@ -307,4 +307,5 @@ notes.txt
 # Ignore app configs holding sensitive data (connection string).
 config.json
 
+DScrib2/pubroot
 tmp/

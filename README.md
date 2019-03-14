@@ -13,9 +13,23 @@ Tech used:
   - MVC 5
   - ASP.NET 4.6.1
 
+## Linux Build Commands
+
+    # Restore dependencies
+    > dotnet restore DScrib2/DSCrib2.csproj --runtime ubuntu.16.04-x64
+    
+    # Clean
+    > dotnet clean DScrib2/DSCrib2.csproj
+    
+    # Build release    
+    > dotnet build DScrib2/DSCrib2.csproj --runtime ubuntu.16.04-x64 --configuration Release
+    
+    # Publish to a folder. Has issues.
+    > rm -rf ./DScrib2/pubroot
+    > dotnet publish DScrib2/DSCrib2.csproj --output pubroot --runtime ubuntu.16.04-x64 --configuration Release
+
 ## Setup
 
 Copy `config.json.example` and fill in reasonable values.
 
 The `Tests` project should run without crashing and create new data in your database.
-

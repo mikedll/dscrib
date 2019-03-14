@@ -31,7 +31,7 @@ namespace DScrib2.Controllers
             }
 
             // Probably should use Auth class from Google lib.
-            var jsonContents = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../", "credentials.json"));
+            var jsonContents = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "credentials.json"));
             var credJson = JsonConvert.DeserializeObject<GoogleCredentialConfig>(jsonContents);
 
             var settings = new GoogleJsonWebSignature.ValidationSettings() { Audience = new List<string>() { credJson.Web.ClientID }  };

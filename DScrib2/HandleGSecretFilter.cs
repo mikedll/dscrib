@@ -13,7 +13,7 @@ namespace DScrib2
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            var jsonContents = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../", "credentials.json"));
+            var jsonContents = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "credentials.json"));
             var cred = JsonConvert.DeserializeObject<GoogleCredentialConfig>(jsonContents);
             
             ((Controller)context.Controller).ViewBag.ClientID = cred.Web.ClientID;
