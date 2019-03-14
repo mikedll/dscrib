@@ -20,21 +20,28 @@ namespace Tests
 
         static void Main(string[] args)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("config.json", optional: false, reloadOnChange: true)
-                .Build();
+            //var config = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetCurrentDirectory())
+            //    .AddJsonFile("config.json", optional: false, reloadOnChange: true)
+            //    .Build();
 
-            var dbConf = config["Data:connectionString"];
+            //var dbConf = config["Data:connectionString"];
 
-            var services = new ServiceCollection();
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConf));
+            //var services = new ServiceCollection();
+            //services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConf));
 
-            var provider = services.BuildServiceProvider();
-            var p = new Program(provider.GetService<AppDbContext>());
+            //var provider = services.BuildServiceProvider();
+
+            //var p = new Program(provider.GetService<AppDbContext>());
+
+
+            var p = new Program(new AppDbContext());
+
+
             //p.AmazonTest();
-            p.AmazonTestSearch();
+            //p.AmazonTestSearch();
             // p.DbExec();
+            p.DbExistingData();
         }
 
         public void AmazonTestSearch()
@@ -75,8 +82,14 @@ namespace Tests
             Console.WriteLine("Finished.");
         }
 
+        public void DbExistingData()
+        {
+            var user = db.Users.FirstOrDefault(u => u.VendorID == "116479349006434114883");
+            var review = user.Reviews.Single(r => r.ID == 42);
+        }
         public void DbExec()
         {
+
             var user = db.Users.FirstOrDefault(u => u.VendorID == "12345");
             var user2 = db.Users.FirstOrDefault(u => u.VendorID == "12");
 

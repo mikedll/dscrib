@@ -81,13 +81,6 @@ namespace DScrib2
                 );
 
                 routes.MapRoute(
-                    name: "Updates",
-                    template: "{controller}/{id}",
-                    defaults: new { action = "Update" },
-                    constraints: new { id = "\\d+" }
-                );
-
-                routes.MapRoute(
                     name: "default", template: "{controller=Home}/{action=Index}/{id?}");
             });
         }

@@ -96,7 +96,7 @@ namespace DScrib2
         }
 
         /*
-         * Returns date, review of top-rated positive review from review page.
+         * Returns (date, review, name) of top-rated positive review from review page.
          * 
          */
         public Tuple<DateTime, string, string> GetReview(string linkSlug, string productID)

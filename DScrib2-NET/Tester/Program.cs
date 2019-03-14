@@ -17,8 +17,8 @@ namespace Tester
         static void Main(string[] args)
         {
             var p = new Program();
-            p.AmazonTest();
-            //p.DbExec();
+            //p.AmazonTest();
+            p.DbExec();
         }
 
         public void AmazonTest()
@@ -48,7 +48,10 @@ namespace Tester
         public void DbExec()
         {
             var db = new AppDbContext();
-            var user = db.Users.FirstOrDefault(u => u.VendorID == "12345");
+            var user = db.Users.FirstOrDefault(u => u.VendorID == "116479349006434114883");
+
+            var r1 = user.Reviews.FirstOrDefault(r => r.ID == 42);
+
             var user2 = db.Users.FirstOrDefault(u => u.VendorID == "12");
 
             if (user != null && user.ID == 1 && user2 == null)
@@ -56,9 +59,9 @@ namespace Tester
                 Console.WriteLine("Okay");
             }
 
-            var newUser = new User { VendorID = "9090112", Email = "sam2@example.com" };
+            var newUser = new User { VendorID = "9090143412", Email = "sam2@example.com" };
             db.Users.Add(newUser);
-            db.SaveChanges();
+            var okay = db.SaveChanges();
             if (newUser.ID > 0)
             {
                 Console.WriteLine("Okay insert.");

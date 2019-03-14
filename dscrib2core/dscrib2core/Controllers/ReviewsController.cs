@@ -3,8 +3,6 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.AspNetCore.Http;
 using DScrib2.Models;
 using Newtonsoft.Json;
@@ -55,42 +53,33 @@ namespace DScrib2
             return true;
         }
 
+        [Route("reviews/{id:regex(\\d+)}/unsave")]
         [HttpPut]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Update(int id)
+        public ActionResult Unsave(int id)
         {
             if (!RequireUser()) return null;
 
-            var review = user.Reviews.FirstOrDefault(r => r.ID == id);
-            if(review == null)
+            var review = _db.Reviews.FirstOrDefault(r => r.UserID == user.ID && r.ID == id);
+            if (review == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return null;
+                return Json(null);
             }
 
-            // new string[] { "Name", "Text", "Date", "Slug", "AmazonID", "Unsave" }
-            if (await TryUpdateModelAsync<Review>(review, "", r => r.Name, r => r.Text, r => r.Date, r => r.Slug, r => r.AmazonID, r => r.Unsave))
+            try
             {
-                try
-                {
-                    if (review.Unsave)
-                    {
-                        // was modified; change to deleted.
-                        _db.Entry(review).State = EntityState.Deleted;
-                    }
-                    _db.SaveChanges();
-                }
-                catch (DataException)
-                {
-                    Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    return null;
-                }
-            } else
+                _db.Reviews.Remove(review);
+                _db.SaveChanges();
+            }
+            catch(DataException)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return null;
+                return Json(null);
             }
 
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            review.Unsave = true;
             return Content(JsonConvert.SerializeObject(review), "application/json");
         }
 
@@ -121,16 +110,16 @@ namespace DScrib2
             if (!RequireAmazonClient()) return null;
 
             var review = _db.Reviews.FirstOrDefault(r => r.Slug == linkSlug && r.AmazonID == productID);
-            if(review != null) return Content(JsonConvert.SerializeObject(review), "application/json");
+            if (review != null) return Content(JsonConvert.SerializeObject(review), "application/json");
 
             var result = client.GetReview(linkSlug, productID);
-            if (result == null)
+            if (review == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.NotFound;
                 return Json(null);
             }
 
-            var unsavedReview = new
+            var reviewData = new
             {
                 Name = result.Item3,
                 Date = result.Item1,
@@ -139,7 +128,7 @@ namespace DScrib2
                 AmazonID = productID
             };
 
-            return Content(JsonConvert.SerializeObject(unsavedReview), "application/json");
+            return Content(JsonConvert.SerializeObject(reviewData), "application/json");
         }
 
         public ActionResult Search(string q)

@@ -21,6 +21,10 @@ var Product = Backbone.Model.extend({
 
   onRequest: function() { this.busy = true },
 
+  unsave: function () {
+    this.save({}, { url: this.url() + '/' + 'unsave' });
+  },
+
   onSync: function () {
     this.busy = false
 
@@ -56,10 +60,6 @@ var Product = Backbone.Model.extend({
         this.trigger('error')
       }, this)
     })
-  },
-
-  unsave: function () {
-    this.save({'Unsave': true})
   },
 
   isRetrieved: function () {
@@ -168,7 +168,7 @@ var ProductView = Backbone.View.extend({
     if (this.model.isRetrieved()) {
       if (!this.folded) {
         this.$el.append($('<td>'
-          + '<span class="review-body-toggle" title="Hide Review">' + this.model.get('Name') + ' <i class="far fa-envelope-open"></i></span>'
+          + '<span class="review-body-toggle" title="Hide Review">' + this.model.get('Name') + ' <i class="far fa-envelope"></i></span>'
           + statusIcons
           + busyIcon
           + '<br/>' + this.model.get('Text')
@@ -177,7 +177,7 @@ var ProductView = Backbone.View.extend({
         ))
       } else {
         this.$el.append($('<td>'
-          + '<span class="review-body-toggle" title="Show Review">' + this.model.get('Name') + ' <i class="far fa-envelope"></i></span>'
+          + '<span class="review-body-toggle" title="Show Review">' + this.model.get('Name') + ' <i class="far fa-envelope-open"></i></span>'
           + statusIcons
           + busyIcon
           + '</td>'
@@ -188,7 +188,7 @@ var ProductView = Backbone.View.extend({
       this.$el.append($('<td>'
         + '<a href="#" class="fetch-action"  title="Fetch Review">'
         + this.model.get('Name')
-        + ' <i class="far fa-envelope fetch-action"></i>'
+        + ' <i class="far fa-envelope-open fetch-action"></i>'
         + '</a>'
         + busyIcon
         + '</td><td></td>')
