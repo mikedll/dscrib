@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using DScrib2;
 using DScrib2.Models;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +35,7 @@ namespace Tests
 
             var p = new Program(provider.GetService<AppDbContext>());
 
-            //p.AmazonTest();
+            p.AmazonGetReview();
             //p.AmazonTestSearch();
             // p.DbExec();
             p.DbExistingData();
@@ -54,26 +55,27 @@ namespace Tests
             var results = sc.ParseSearch(searchBody);
         }
 
-        public void AmazonTest()
+        public void AmazonGetReview()
         {
             // Tolerable to have a made-up email when debugging.
             var sc = new AmazonWebClient("testing@example.com");
 
-            //var body = sc.GetTestReview();
+            var body = sc.GetTestReview();
             //var review = sc.GetReview("Sandalwood-Patchouli-Different-Scents-Karma", "B06Y274RR8");
-            //if (body == null)
-            //{
-            //    Console.WriteLine("Got null response from GetReviewPage.");
-            //    return;
-            //}
-            //var results = sc.ParseSearch(body);
+            if (body == null)
+            {
+                Console.WriteLine("Got null response from GetReviewPage.");
+                return;
+            }
+            var results = sc.ParseReview(body);
 
-            //var review = sc.GetReview("Eucalan-Lavender-Fine-Fabric-Ounce", "B001DEJMPG");
-            //Console.WriteLine(review.Item1);
-            //Console.WriteLine(review.Item2);
-            //var destFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sample-review.html");
-            //Console.WriteLine($"Writing {body.Length} characters to {AppDomain.CurrentDomain.BaseDirectory}");
-            //System.IO.File.WriteAllText(destFile, body, Encoding.UTF8);
+            //var results = sc.GetReview("Eucalan-Lavender-Fine-Fabric-Ounce", "B001DEJMPG");
+
+            Console.WriteLine(results.Item1);
+            Console.WriteLine(results.Item2);
+            var destFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../tmp", "searchResult.html");
+            Console.WriteLine($"Writing {body.Length} characters to {AppDomain.CurrentDomain.BaseDirectory}");
+            File.WriteAllText(destFile, body, Encoding.UTF8);
 
             Console.WriteLine("Finished.");
         }

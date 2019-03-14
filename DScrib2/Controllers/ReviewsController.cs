@@ -60,7 +60,7 @@ namespace DScrib2
         {
             if (!RequireUser()) return null;
 
-            var review = _db.Reviews.FirstOrDefault(r => r.UserID == user.ID && r.ID == id);
+            var review = user.Reviews.FirstOrDefault(r => r.ID == id);
             if (review == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -113,7 +113,7 @@ namespace DScrib2
             if (review != null) return Content(JsonConvert.SerializeObject(review), "application/json");
 
             var result = client.GetReview(linkSlug, productID);
-            if (review == null)
+            if (result == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.NotFound;
                 return Json(null);

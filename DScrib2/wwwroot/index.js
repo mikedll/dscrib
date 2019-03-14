@@ -405,7 +405,7 @@ $(function () {
       userID: __userID
     })
     gExplorer.prepare()
-  } else if (location.pathname === '/me/reviews') {
+  } else if (location.pathname === '/reviews') {
     var rv = new ReviewsView({
       el: $('.reviews-app').first(),
       models: __bootstrap

@@ -27,7 +27,11 @@ namespace DScrib2
 
             var dbConf = config["Data:connectionString"];
 
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConf));
+            services.AddDbContext<AppDbContext>(options =>
+                options
+                    .UseLazyLoadingProxies()
+                    .UseSqlServer(dbConf)    
+            );
 
             services.AddAntiforgery(options =>
             {
