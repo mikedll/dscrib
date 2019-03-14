@@ -34,7 +34,7 @@ namespace DScrib2
 
         private string ReadFile(string file)
         {
-            return File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../tmp/", file));
+            return File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../tmp/", file));
         }
 
         public string GetTestSearch()

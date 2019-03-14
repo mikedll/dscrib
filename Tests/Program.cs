@@ -20,23 +20,19 @@ namespace Tests
 
         static void Main(string[] args)
         {
-            //var config = new ConfigurationBuilder()
-            //    .SetBasePath(Directory.GetCurrentDirectory())
-            //    .AddJsonFile("config.json", optional: false, reloadOnChange: true)
-            //    .Build();
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("config.json", optional: false, reloadOnChange: true)
+                .Build();
 
-            //var dbConf = config["Data:connectionString"];
+            var dbConf = config["Data:connectionString"];
 
-            //var services = new ServiceCollection();
-            //services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConf));
+            var services = new ServiceCollection();
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConf));
 
-            //var provider = services.BuildServiceProvider();
+            var provider = services.BuildServiceProvider();
 
-            //var p = new Program(provider.GetService<AppDbContext>());
-
-
-            var p = new Program(new AppDbContext());
-
+            var p = new Program(provider.GetService<AppDbContext>());
 
             //p.AmazonTest();
             //p.AmazonTestSearch();
