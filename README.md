@@ -8,10 +8,13 @@
 
 Tech used:
 
-  - Entity Framework 6.2
-  - Google.Apis for leveraging Google sign-ins.
-  - MVC 5
-  - ASP.NET 4.6.1
+  - ASP.NET Core 2.1
+  - Entity Framework Core 2.1.x
+  - Google.Apis.Auth for leveraging Google sign-ins.
+  - Newtonsoft.Json
+  - AngleSharp
+
+This project started as an ASP.NET MVC 5 project.
 
 ## Linux Build Commands
 
