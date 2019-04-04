@@ -1,52 +1,25 @@
-﻿
--- create DScrib2 database, first.
-
--- You can create a login with this.
---USE [master]
---GO
---CREATE LOGIN [dscrib2dev] WITH PASSWORD=N'backintime', DEFAULT_DATABASE=[DScrib2], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
---GO
-
---USE [DScrib2]
---GO
---CREATE USER [dscrib2dev] FOR LOGIN [dscrib2dev]
---GO
---USE [DScrib2]
---GO
---ALTER USER [dscrib2dev] WITH DEFAULT_SCHEMA=[dbo]
---GO
-
---USE [DScrib2]
---GO
---EXEC sp_addrolemember N'db_owner', N'dscrib2dev'
---GO
 
 
 -- Schema.
-DROP TABLE Review
-DROP TABLE "User"
+DROP TABLE "Reviews";
+DROP TABLE "Users";
 
-CREATE TABLE "User" (
-  "ID" INT IDENTITY PRIMARY KEY,
-  "Email" NVARCHAR(200) NOT NULL,
-  "VendorID" NVARCHAR(50) NOT NULL UNIQUE,
-  );
-
-CREATE TABLE "Review" (
-  "ID" INT IDENTITY PRIMARY KEY,
-  "Name" NVARCHAR(1000) NOT NULL,
-  "Text" TEXT NOT NULL,
-  "Date" DateTime NOT NULL,
-  "Slug" NVARCHAR(200) NOT NULL,
-  "AmazonID" NVARCHAR(200) NOT NULL,
-  "UserID" INT FOREIGN KEY REFERENCES "User"(ID) NOT NULL
+CREATE TABLE "Users" (
+  "ID" bigserial PRIMARY KEY,
+  "Email" character varying NOT NULL,
+  "VendorID" character varying UNIQUE NOT NULL
 );
 
-DELETE FROM Review
-SELECT ID, Email, VendorID FROM "User" 
+CREATE TABLE "Reviews" (
+  "ID" bigserial PRIMARY KEY,
+  "Name" character varying NOT NULL,
+  "Text" CHARACTER VARYING DEFAULT '' NOT NULL,
+  "Date" timestamp NOT NULL,
+  "Slug" character varying NOT NULL,
+  "AmazonID" character varying NOT NULL,
+  "UserID" INTEGER NOT NULL REFERENCES "Users"("ID")
+);
 
-SELECT ID, Name, Date FROM Review
-
-INSERT INTO "User" (Email, VendorID) VALUES ('sam@example.com', '12345');
-INSERT INTO "User" (Email, VendorID) VALUES ('sam@example.com', '123456');
-
+-- For localdev.
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO localdev;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public to localdev;

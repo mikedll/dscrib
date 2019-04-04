@@ -27,12 +27,14 @@ namespace DScrib2
 
             var dbConf = config["Data:connectionString"];
 
-            services.AddDbContext<AppDbContext>(options =>
+            services
+                .AddEntityFrameworkNpgsql()
+                .AddDbContext<AppDbContext>(options =>
                 options
                     .UseLazyLoadingProxies()
-                    .UseSqlServer(dbConf)    
+                    .UseNpgsql(dbConf)    
             );
-
+                            
             services.AddAntiforgery(options =>
             {
                 options.HeaderName = "X-CSRF-TOKEN-CUSTOM";
