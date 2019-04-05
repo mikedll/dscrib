@@ -301,11 +301,10 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-credentials.json
 notes.txt
 
-# Ignore app configs holding sensitive data (connection string).
-config.json
+# Ignore app configs holding sensitive data (connection string, google secret).
+devsecrets.json
 
 .emacs.desktop
 

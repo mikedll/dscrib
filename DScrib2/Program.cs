@@ -21,7 +21,10 @@ namespace DScrib2
             WebHost.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration(builder =>
             {
-                builder.AddJsonFile("config.json", optional: false, reloadOnChange: true);
+                builder
+                    .AddJsonFile("devsecrets.json", optional: false, reloadOnChange: true)
+                    .AddEnvironmentVariables();
+
             })
             .UseStartup<Startup>();
     }
