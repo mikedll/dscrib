@@ -52,7 +52,7 @@ namespace DScrib2
 
             services.AddMvc(options =>
             {
-                options.Filters.Add(new HandleGSecretFilter());
+                options.Filters.Add<HandleGSecretFilter>();
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
         }
