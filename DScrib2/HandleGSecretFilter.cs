@@ -6,17 +6,20 @@ using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace DScrib2
 {
     public class HandleGSecretFilter : IActionFilter
     {
+        private IConfiguration _config;
+
+        public HandleGSecretFilter(IConfiguration config)
+        {
+            _config = config;
+        }
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            IConfiguration config = context.HttpContext.RequestServices.GetService<IConfiguration>();            
-            ((Controller)context.Controller).ViewBag.ClientID = config["GoogleClientId"];
+            ((Controller)context.Controller).ViewBag.ClientID = _config["GoogleClientId"];
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
