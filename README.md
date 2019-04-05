@@ -6,15 +6,11 @@ ASP.NET Core application to peruse Amazon.com product reviews. User emails are i
 
 ![alt text](https://github.com/mikedll/dscrib2/raw/d58704960f6edcc10e49bac7be892055e9774c92/sample.png)
 
-Tech used:
+## Local Dev Setup
 
-  - ASP.NET Core 2.1
-  - Entity Framework Core 2.1.x
-  - Google.Apis.Auth for leveraging Google sign-ins.
-  - Newtonsoft.Json
-  - AngleSharp
+Copy `devsecrets.json.example` to `devsecrets.json` and fill in reasonable values (even in the DScrib2 project).
 
-This project started as an ASP.NET MVC 5 project.
+The `Tests` project is for exercising the code but you have to babysit it right now.
 
 ## Linux Build Commands
 
@@ -31,8 +27,12 @@ This project started as an ASP.NET MVC 5 project.
     > rm -rf ./DScrib2/pubroot
     > dotnet publish DScrib2/DSCrib2.csproj --output pubroot --runtime ubuntu.16.04-x64 --configuration Release
 
-## Setup
+## Tech Used
 
-Copy `config.json.example` and fill in reasonable values.
+  - ASP.NET Core 2.1
+  - Entity Framework Core 2.1.x
+  - Google.Apis.Auth for leveraging Google sign-ins.
+  - Newtonsoft.Json
+  - AngleSharp
 
-The `Tests` project should run without crashing and create new data in your database.
+This project started as an ASP.NET MVC 5 project.
