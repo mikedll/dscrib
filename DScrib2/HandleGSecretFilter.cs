@@ -5,6 +5,8 @@ using System.Linq;
 using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace DScrib2
@@ -13,11 +15,8 @@ namespace DScrib2
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            var jsonContents = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "credentials.json"));
-            var cred = JsonConvert.DeserializeObject<GoogleCredentialConfig>(jsonContents);
-            
-            ((Controller)context.Controller).ViewBag.ClientID = cred.Web.ClientID;
-
+            IConfiguration config = context.HttpContext.RequestServices.GetService<IConfiguration>();            
+            ((Controller)context.Controller).ViewBag.ClientID = config["GoogleClientId"];
         }
 
         public void OnActionExecuted(ActionExecutedContext context)

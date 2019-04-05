@@ -10,16 +10,19 @@ using Google.Apis.Auth;
 using Newtonsoft.Json;
 using DScrib2.Models;
 using System.Net;
+using Microsoft.Extensions.Configuration;
 
 namespace DScrib2.Controllers
 {
     public class SessionsController : Controller
     {
         private AppDbContext _db;
+        private IConfiguration _config;
 
-        public SessionsController(AppDbContext db)
+        public SessionsController(AppDbContext db, IConfiguration config)
         {
             _db = db;
+            _config = config;
         }
 
         public async Task<ActionResult> TokenLogin(string idToken)
@@ -30,11 +33,7 @@ namespace DScrib2.Controllers
                 return null;
             }
 
-            // Probably should use Auth class from Google lib.
-            var jsonContents = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "credentials.json"));
-            var credJson = JsonConvert.DeserializeObject<GoogleCredentialConfig>(jsonContents);
-
-            var settings = new GoogleJsonWebSignature.ValidationSettings() { Audience = new List<string>() { credJson.Web.ClientID }  };
+            var settings = new GoogleJsonWebSignature.ValidationSettings() { Audience = new List<string>() { _config["GoogleClientId"] }  };
 
             string subject = null;
             string email = null;

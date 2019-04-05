@@ -16,16 +16,18 @@ namespace DScrib2
 {
     public class Startup
     {
+        private IConfiguration _config;
+
+        public Startup(IConfiguration config)
+        {
+            _config = config;
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("config.json", optional: false, reloadOnChange: true)
-                .Build();
-
-            var dbConf = config["Data:connectionString"];
+            var dbConf = _config["Data:connectionString"];
 
             services
                 .AddEntityFrameworkNpgsql()

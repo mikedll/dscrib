@@ -19,6 +19,10 @@ namespace DScrib2
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+            .ConfigureAppConfiguration(builder =>
+            {
+                builder.AddJsonFile("config.json", optional: false, reloadOnChange: true);
+            })
+            .UseStartup<Startup>();
     }
 }
