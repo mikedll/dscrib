@@ -22,7 +22,7 @@ namespace DScrib2
             .ConfigureAppConfiguration(builder =>
             {
                 builder
-                    .AddJsonFile("devsecrets.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile("devsecrets.json", optional: true, reloadOnChange: true)
                     .AddEnvironmentVariables();
 
             })
