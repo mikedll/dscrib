@@ -23,10 +23,10 @@ namespace Tests
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("config.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("devsecrets.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            var dbConf = config["Data:connectionString"];
+            var dbConf = config["DbConnectionString"];
 
             var services = new ServiceCollection();
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConf));
@@ -35,10 +35,18 @@ namespace Tests
 
             var p = new Program(provider.GetService<AppDbContext>());
 
-            p.AmazonGetReview();
+            p.AmazonSearch();
+            //p.AmazonTestSearch();
             //p.AmazonTestSearch();
             // p.DbExec();
-            p.DbExistingData();
+            // p.DbExistingData();
+        }
+
+        public void AmazonSearch()
+        {
+            // Tolerable to have a made-up email when debugging.
+            var sc = new AmazonWebClient("testing@example.com");
+            sc.Search("wallet");
         }
 
         public void AmazonTestSearch()

@@ -200,6 +200,10 @@ var ProductView = Backbone.View.extend({
   }
 })
 
+var SearchDebugResult = Backbone.Model.extend({
+
+})
+
 var Products = Backbone.Collection.extend({
   url: '/reviews',
   model: Product
@@ -208,6 +212,7 @@ var Products = Backbone.Collection.extend({
 var Explorer = Backbone.View.extend({
 
   events: {
+    'change input[name=is_debug]': 'onDebugChange',
     'change input[name=search]': 'onChange',
     'keyup input[name=search]': 'onChange',
     'submit form.search-form': 'onSearch',
@@ -215,7 +220,9 @@ var Explorer = Backbone.View.extend({
 
   search: "",
   searching: false,
+  isDebugMode: false,
   results: new Products(),
+  debugResult: new SearchDebugResult({ body: null }),
   loggedIn: false,
   userID: null,
   lastError: null,
@@ -227,7 +234,12 @@ var Explorer = Backbone.View.extend({
       this.userID = options.userID;
       this.loggedIn = true;
     }
-    this.listenTo(this.results, 'reset', this.onResultsChanged)
+    this.listenTo(this.results, 'reset', this.render)
+    this.listenTo(this.debugResult, 'change', this.render)
+  },
+
+  onDebugChange: function (e) {
+    this.isDebugMode = e.target.checked;
   },
 
   onChange: function (e) {
@@ -261,10 +273,12 @@ var Explorer = Backbone.View.extend({
     }
   },
 
-  onResultsChanged: function (e) {
-    this.render();
+  onSearchError: function () {
+    this.searching = false
+    this.lastError = "An error occurred while searching."
+    this.render()
   },
-  
+
   onSearch: function(e) {    
     e.preventDefault()
     this.lastError = null;
@@ -277,22 +291,35 @@ var Explorer = Backbone.View.extend({
 
     this.searching = true
     this.results.reset()
-    $.get({
-      url: '/search',
-      data: {
-        q: this.search
-      },
-      dataType: 'JSON',
-      success: _.bind(function (data) {
-        this.searching = false
-        this.results.reset(data); // will call render...kinda weird.
-      }, this),
-      error: _.bind(function () {
-        this.searching = false
-        this.lastError = "An error occurred while searching."
-        this.render()
-      }, this)
-    })
+    this.debugResult.set({ body: null })
+
+    if (this.isDebugMode) {
+      $.get({
+        url: '/debug_search',
+        data: {
+          q: this.search
+        },
+        dataType: 'JSON',
+        success: _.bind(function (data) {
+          this.searching = false
+          this.debugResult.set({ body: data.Body })
+        }, this),
+        error: _.bind(this.onSearchError, this)
+      })
+    } else {
+      $.get({
+        url: '/search',
+        data: {
+          q: this.search
+        },
+        dataType: 'JSON',
+        success: _.bind(function (data) {
+          this.searching = false
+          this.results.reset(data); // will call render...kinda weird.
+        }, this),
+        error: _.bind(this.onSearchError, this)
+      })
+    }
     this.render()
   },
 
@@ -306,17 +333,28 @@ var Explorer = Backbone.View.extend({
     }
 
     var searchForm = $('<form class="form-inline search-form">'
-      + '<fieldset ' + (this.searching ? 'disabled' : '') + '>'
-      + '<input type="text" name="search" placeholder="Product to Search For" class="form-control mb-2 mr-sm-2"/>'
-      + '<button type="submit" class="btn btn-primary mb-2 mr-sm-2">Search</button>'
+      + '<input type="text" name="search" placeholder="Product to Search For" class="form-control mb-2 mr-sm-2" ' + (this.searching ? 'disabled' : '') + '/>'
+      + '<button type="submit" class="btn btn-primary mb-2 mr-sm-2" ' + (this.searching ? 'disabled' : '') + '>Search</button>'
+      //+ '<div class="form-check mb-2 mr-sm-2">'
+      //+ '  <input type="checkbox" name="is_debug" value="true" id="search_is_debug" class="form-check-input" ' + (this.searching ? 'disabled' : '') + '/> '
+      //+ '  <label for="search_is_debug" class="form-check-label">Debug Mode</label>'
+      //+ '</div>'
       + (this.searching ? '<i class="fas fa-spinner fa-spin"></i>' : '')
-      + '</fieldset></form>'
+      + '</form>'
     )
     searchForm.find('input[name=search]').val(this.search)
+    searchForm.find('input[name=is_debug]').prop('checked', this.isDebugMode)
+
+    var debugDisplay = null
+    if (!this.searching && this.debugResult.get('body') !== null) {
+      debugDisplay = $(
+        '<textarea class="debug">' + this.debugResult.get('body') + '</textarea>'
+      )
+    }
 
     var tableArea = null
     if (!this.searching && this.results.length > 0) {
-      var tableArea = $(
+      tableArea = $(
         "<table class='table table-bordered'><thead class='thead-dark'>"
         + '<tr><th>Product</th><th>Review Date</th><th>Link</th></tr>'
         + '</thead><tbody>'
@@ -330,9 +368,7 @@ var Explorer = Backbone.View.extend({
     }
 
     this.$el.empty()
-    this.$el.append(infoBox)
-    this.$el.append(searchForm)
-    this.$el.append(tableArea)
+    this.$el.append(_.compact([infoBox, searchForm, debugDisplay, tableArea]))
     return this
   },
 

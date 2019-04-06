@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Web;
 
 namespace DScrib2
 {
@@ -131,9 +132,34 @@ namespace DScrib2
             return Content(JsonConvert.SerializeObject(reviewData), "application/json");
         }
 
+        public ActionResult DebugSearch(string q)
+        {
+            if (!RequireAmazonClient())
+            {
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                return Content(JsonConvert.SerializeObject(new { Body = "" }), "application/json");
+            }
+
+            if (q == null) return Content(JsonConvert.SerializeObject(new { Body = "" }), "application/json");
+
+            var body = client.SearchBody(q);
+            if(body == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            }
+
+            return Content(JsonConvert.SerializeObject(new { Body = HttpUtility.HtmlEncode(body) }), "application/json");
+        }
+
         public ActionResult Search(string q)
         {
-            if (!RequireAmazonClient()) return null;
+            if (!RequireAmazonClient())
+            {
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                return Json(new List<Dictionary<string, string>> { });
+            }
+
+            if (q == null) return Json(new List<Dictionary<string, string>> { });
 
             return Json(client.Search(q).Select(v => new Dictionary<string, string>(){
                 { "Name", v.Item1 },

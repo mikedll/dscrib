@@ -51,6 +51,7 @@ namespace DScrib2
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Headers["From"] = email;
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             string body = "";
             WebResponse response = null;
@@ -65,6 +66,15 @@ namespace DScrib2
 
             if (response == null) return "";
 
+            //for(int i = 0; i < response.Headers.Count; ++i)
+            //{
+            //    string header = response.Headers.GetKey(i);
+            //    foreach(string value in response.Headers.GetValues(i))
+            //    {
+            //        Console.WriteLine($"{header}: {value}");
+            //    }
+            //}
+ 
             using (var str = response.GetResponseStream())
             {
                 byte[] buf = new byte[1024];
@@ -156,13 +166,21 @@ namespace DScrib2
         }
 
         /*
+         * Returns string of html, or null on error.
+         */
+        public string SearchBody(string q)
+        {
+            const int MaxSize = 200;
+            var url = "https://www.amazon.com/s/?field-keywords=" + Uri.EscapeDataString(q.Substring(0, Math.Min(q.Length, MaxSize)));
+            return GetPage(url);
+        }
+
+        /*
          * Returns a (name, linkSlug, productID) for every product found.
          */
         public List<Tuple<string, string, string>> Search(string q)
         {
-            const int MaxSize = 200;
-            var url = "https://www.amazon.com/s/?field-keywords=" + Uri.EscapeDataString(q.Substring(0, Math.Min(q.Length, MaxSize)));
-            var body = GetPage(url);
+            var body = SearchBody(q);
             if (body == null)
             {
                 return new List<Tuple<string, string, string>>();
