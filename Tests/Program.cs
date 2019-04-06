@@ -23,10 +23,10 @@ namespace Tests
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("config.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("devsecrets.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            var dbConf = config["Data:connectionString"];
+            var dbConf = config["DbConnectionString"];
 
             var services = new ServiceCollection();
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConf));

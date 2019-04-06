@@ -57,7 +57,7 @@ namespace DScrib2
         [Route("reviews/{id:regex(\\d+)}/unsave")]
         [HttpPut]
         [ValidateAntiForgeryToken]
-        public ActionResult Unsave(int id)
+        public async Task<ActionResult> Unsave(int id)
         {
             if (!RequireUser()) return null;
 
@@ -86,7 +86,7 @@ namespace DScrib2
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([FromBody][Bind("Name, Text, Date, Slug, AmazonID")]Review review)
+        public async Task<ActionResult> Create([FromBody][Bind("Name, Text, Date, Slug, AmazonID")]Review review)
         {
             if (!RequireUser()) return null;
 
@@ -105,7 +105,7 @@ namespace DScrib2
             return Content(JsonConvert.SerializeObject(review), "application/json");
         }
 
-        public ActionResult Fetch(string linkSlug, string productID)
+        public async Task<ActionResult> Fetch(string linkSlug, string productID)
         {
             if (!RequireUser()) return null;
             if (!RequireAmazonClient()) return null;
@@ -132,7 +132,7 @@ namespace DScrib2
             return Content(JsonConvert.SerializeObject(reviewData), "application/json");
         }
 
-        public ActionResult DebugSearch(string q)
+        public async Task<ActionResult> DebugSearch(string q)
         {
             if (q == null) return Content(JsonConvert.SerializeObject(new { Body = "" }), "application/json");
 
@@ -147,7 +147,7 @@ namespace DScrib2
             return Content(JsonConvert.SerializeObject(new { Body = HttpUtility.HtmlEncode(body) }), "application/json");
         }
 
-        public ActionResult Search(string q)
+        public async Task<ActionResult> Search(string q)
         {
             if(q == null) return Json(new List<Dictionary<string, string>> { });
 
@@ -159,7 +159,7 @@ namespace DScrib2
                 { "AmazonID", v.Item3 }}));
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             if (!RequireUser()) return null;
 
