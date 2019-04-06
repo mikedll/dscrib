@@ -51,7 +51,8 @@ namespace DScrib2
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Headers["From"] = email;
-            request.Headers["Accept-Encoding"] = "identity";
+            // request.Headers["Accept-Encoding"] = "identity";
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             string body = "";
             WebResponse response = null;
