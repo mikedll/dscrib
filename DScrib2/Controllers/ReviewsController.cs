@@ -50,7 +50,6 @@ namespace DScrib2
 
             if (!RequireUser()) return false;
 
-            Console.WriteLine($"Returned user email: {user.Email}");
             client = new AmazonWebClient(user.Email);
             return true;
         }
@@ -58,7 +57,7 @@ namespace DScrib2
         [Route("reviews/{id:regex(\\d+)}/unsave")]
         [HttpPut]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Unsave(int id)
+        public ActionResult Unsave(int id)
         {
             if (!RequireUser()) return null;
 
@@ -87,7 +86,7 @@ namespace DScrib2
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([FromBody][Bind("Name, Text, Date, Slug, AmazonID")]Review review)
+        public ActionResult Create([FromBody][Bind("Name, Text, Date, Slug, AmazonID")]Review review)
         {
             if (!RequireUser()) return null;
 
@@ -106,7 +105,7 @@ namespace DScrib2
             return Content(JsonConvert.SerializeObject(review), "application/json");
         }
 
-        public async Task<ActionResult> Fetch(string linkSlug, string productID)
+        public ActionResult Fetch(string linkSlug, string productID)
         {
             if (!RequireUser()) return null;
             if (!RequireAmazonClient()) return null;
@@ -168,7 +167,7 @@ namespace DScrib2
                 { "AmazonID", v.Item3 }}));
         }
 
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
             if (!RequireUser()) return null;
 

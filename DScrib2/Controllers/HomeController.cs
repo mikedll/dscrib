@@ -5,21 +5,20 @@ using System.Linq;
 using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace DScrib2.Controllers
 {
     public class HomeController : Controller
     {
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
             HttpContext.Session.SetString("myval", "hi");
             var myVal = HttpContext.Session.GetString("myval");
             return View();
         }
 
-        public async Task<ActionResult> YourEmail()
+        public ActionResult YourEmail()
         {
             return View();
         }
