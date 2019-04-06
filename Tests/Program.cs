@@ -35,10 +35,18 @@ namespace Tests
 
             var p = new Program(provider.GetService<AppDbContext>());
 
-            p.AmazonGetReview();
+            p.AmazonSearch();
+            //p.AmazonTestSearch();
             //p.AmazonTestSearch();
             // p.DbExec();
             p.DbExistingData();
+        }
+
+        public void AmazonSearch()
+        {
+            // Tolerable to have a made-up email when debugging.
+            var sc = new AmazonWebClient("testing@example.com");
+            sc.Search("wallet");
         }
 
         public void AmazonTestSearch()
