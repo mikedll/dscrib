@@ -156,13 +156,21 @@ namespace DScrib2
         }
 
         /*
+         * Returns string of html, or null on error.
+         */
+        public string SearchBody(string q)
+        {
+            const int MaxSize = 200;
+            var url = "https://www.amazon.com/s/?field-keywords=" + Uri.EscapeDataString(q.Substring(0, Math.Min(q.Length, MaxSize)));
+            return GetPage(url);
+        }
+
+        /*
          * Returns a (name, linkSlug, productID) for every product found.
          */
         public List<Tuple<string, string, string>> Search(string q)
         {
-            const int MaxSize = 200;
-            var url = "https://www.amazon.com/s/?field-keywords=" + Uri.EscapeDataString(q.Substring(0, Math.Min(q.Length, MaxSize)));
-            var body = GetPage(url);
+            var body = SearchBody(q);
             if (body == null)
             {
                 return new List<Tuple<string, string, string>>();

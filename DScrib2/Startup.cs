@@ -71,6 +71,12 @@ namespace DScrib2
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "DebugSearch",
+                    template: "debug_search",
+                    defaults: new { controller = "Reviews", action = "DebugSearch" }
+                );
+
+                routes.MapRoute(
                     name: "Search",
                     template: "search",
                     defaults: new { controller = "Reviews", action = "Search" }
