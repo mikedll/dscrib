@@ -50,6 +50,7 @@ namespace DScrib2
 
             if (!RequireUser()) return false;
 
+            Console.WriteLine($"Returned user email: {user.Email}");
             client = new AmazonWebClient(user.Email);
             return true;
         }
@@ -132,11 +133,15 @@ namespace DScrib2
             return Content(JsonConvert.SerializeObject(reviewData), "application/json");
         }
 
-        public async Task<ActionResult> DebugSearch(string q)
+        public ActionResult DebugSearch(string q)
         {
-            if (q == null) return Content(JsonConvert.SerializeObject(new { Body = "" }), "application/json");
+            if (!RequireAmazonClient())
+            {
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                return Content(JsonConvert.SerializeObject(new { Body = "" }), "application/json");
+            }
 
-            if (!RequireAmazonClient()) return null;
+            if (q == null) return Content(JsonConvert.SerializeObject(new { Body = "" }), "application/json");
 
             var body = client.SearchBody(q);
             if(body == null)
@@ -147,11 +152,15 @@ namespace DScrib2
             return Content(JsonConvert.SerializeObject(new { Body = HttpUtility.HtmlEncode(body) }), "application/json");
         }
 
-        public async Task<ActionResult> Search(string q)
+        public ActionResult Search(string q)
         {
-            if(q == null) return Json(new List<Dictionary<string, string>> { });
+            if (!RequireAmazonClient())
+            {
+                Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                return Json(new List<Dictionary<string, string>> { });
+            }
 
-            if (!RequireAmazonClient()) return null;
+            if (q == null) return Json(new List<Dictionary<string, string>> { });
 
             return Json(client.Search(q).Select(v => new Dictionary<string, string>(){
                 { "Name", v.Item1 },
