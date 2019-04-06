@@ -66,14 +66,14 @@ namespace DScrib2
 
             if (response == null) return "";
 
-            for(int i = 0; i < response.Headers.Count; ++i)
-            {
-                string header = response.Headers.GetKey(i);
-                foreach(string value in response.Headers.GetValues(i))
-                {
-                    Console.WriteLine($"{header}: {value}");
-                }
-            }
+            //for(int i = 0; i < response.Headers.Count; ++i)
+            //{
+            //    string header = response.Headers.GetKey(i);
+            //    foreach(string value in response.Headers.GetValues(i))
+            //    {
+            //        Console.WriteLine($"{header}: {value}");
+            //    }
+            //}
  
             using (var str = response.GetResponseStream())
             {
