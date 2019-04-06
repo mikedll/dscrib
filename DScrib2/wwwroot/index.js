@@ -335,10 +335,10 @@ var Explorer = Backbone.View.extend({
     var searchForm = $('<form class="form-inline search-form">'
       + '<input type="text" name="search" placeholder="Product to Search For" class="form-control mb-2 mr-sm-2" ' + (this.searching ? 'disabled' : '') + '/>'
       + '<button type="submit" class="btn btn-primary mb-2 mr-sm-2" ' + (this.searching ? 'disabled' : '') + '>Search</button>'
-      + '<div class="form-check mb-2 mr-sm-2">'
-      + '  <input type="checkbox" name="is_debug" value="true" id="search_is_debug" class="form-check-input" ' + (this.searching ? 'disabled' : '') + '/> '
-      + '  <label for="search_is_debug" class="form-check-label">Debug Mode</label>'
-      + '</div>'
+      //+ '<div class="form-check mb-2 mr-sm-2">'
+      //+ '  <input type="checkbox" name="is_debug" value="true" id="search_is_debug" class="form-check-input" ' + (this.searching ? 'disabled' : '') + '/> '
+      //+ '  <label for="search_is_debug" class="form-check-label">Debug Mode</label>'
+      //+ '</div>'
       + (this.searching ? '<i class="fas fa-spinner fa-spin"></i>' : '')
       + '</form>'
     )
