@@ -62,6 +62,7 @@ namespace DScrib2.Controllers
 
             HttpContext.Session.SetString("userID", user.ID.ToString());
 
+            Console.WriteLine($"User logged in {user.ID}");
             // Should be able to insert this into SQL Server.
             return Content(JsonConvert.SerializeObject(user), "application/json");
         }
