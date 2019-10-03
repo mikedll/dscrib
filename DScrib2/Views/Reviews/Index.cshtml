@@ -8,5 +8,9 @@
 }
 
 <div class="app-container">
+    @if(ViewBag.Error != "")
+    {
+        <div class="error">@ViewBag.Error</div>
+    }
   <div class="reviews-app"></div>
 </div>

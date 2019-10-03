@@ -169,7 +169,10 @@ namespace DScrib2
 
         public ActionResult Index()
         {
-            if (!RequireUser()) return null;
+            if (!RequireUser()) {
+                ViewBag.Error = "You are not recognized as being logged in.";
+                return View();
+            }
 
             ViewBag.Reviews = user.Reviews;
             return View();
