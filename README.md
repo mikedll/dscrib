@@ -27,6 +27,15 @@ The `Tests` project is for exercising the code but you have to babysit it right 
     > rm -rf ./DScrib2/pubroot
     > dotnet publish DScrib2/DSCrib2.csproj --output pubroot --runtime ubuntu.16.04-x64 --configuration Release
 
+## Mac build and run
+
+    > dotnet build DScrib2/DSCrib2.csproj
+
+    # Start the server.
+    > dotnet bin/Debug/netcoreapp2.1/DScrib2.dll dotnet
+
+You don't have to publish it.
+
 ## Tech Used
 
   - ASP.NET Core 2.1
