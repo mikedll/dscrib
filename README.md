@@ -29,10 +29,21 @@ The `Tests` project is for exercising the code but you have to babysit it right 
 
 ## Mac build and run
 
-    > dotnet build DScrib2/DSCrib2.csproj
+Create a `.envrc` in the root folder and `direnv allow` it. It should have your Google client id:
 
+    export GoogleClientId="334348blahblah.apps.googleusercontent.com"
+
+Then:
+
+    > cd DScrib2
+    > dotnet build DSCrib2.csproj
+
+    > cp ../devsecrets.json ./
+    
+You might have to change how the connection string is setup. On OS X, this works: `"Database=dscrib2development;Host=localhost"`. But on Windows, a space delimiter instead of a semicolon works.
+    
     # Start the server.
-    > dotnet bin/Debug/netcoreapp2.1/DScrib2.dll dotnet
+    > dotnet run bin/Debug/netcoreapp2.1/DScrib2.dll
 
 You don't have to publish it.
 
