@@ -58,6 +58,7 @@ namespace DScrib2.Controllers
                 var newUser = new User() { Email = email, VendorID = subject };
                 _db.Users.Add(newUser);
                 _db.SaveChanges();
+                user = newUser;
             }
 
             HttpContext.Session.SetString("userID", user.ID.ToString());

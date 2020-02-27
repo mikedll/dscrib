@@ -310,3 +310,5 @@ devsecrets.json
 
 DScrib2/pubroot
 tmp/
+
+.envrc
