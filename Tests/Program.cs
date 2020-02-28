@@ -35,9 +35,8 @@ namespace Tests
 
             var p = new Program(provider.GetService<AppDbContext>());
 
-            p.AmazonSearch();
-            //p.AmazonTestSearch();
-            //p.AmazonTestSearch();
+            //p.AmazonSearch();
+            p.AmazonTestSearch();
             // p.DbExec();
             // p.DbExistingData();
         }
@@ -60,7 +59,12 @@ namespace Tests
                 Console.WriteLine("Error when retrieving test search.");
                 return;
             }
+            Console.WriteLine("Got search body, parsing...");
             var results = sc.ParseSearch(searchBody);
+            foreach(var result in results)
+            {
+                Console.WriteLine("Got product name: {0}", result.Item1);
+            }
         }
 
         public void AmazonGetReview()

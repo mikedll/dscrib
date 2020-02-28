@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using AngleSharp.Parser.Html;
+using AngleSharp.Dom;
 using Ganss.XSS;
 
 namespace DScrib2
@@ -189,6 +190,9 @@ namespace DScrib2
             return ParseSearch(body);
         }
 
+        /*
+         * Return list of <name, linkSlug, productID>
+         */ 
         public List<Tuple<string, string, string>> ParseSearch(string body)
         {
             var doc = ParseDoc(body);
@@ -196,19 +200,38 @@ namespace DScrib2
             // Amazon gives different html and its hard to say which one will be coming.
             var sel1 = ".s-result-list .a-link-normal.s-access-detail-page";
             var sel2 = ".s-result-list h5 .a-link-normal";
-            var sel3 = ".s-result-list .s-result-item .a-link-normal";
+            var sel3 = ".s-result-list .s-result-item .a-link-normal.a-text-normal";
 
+            IEnumerable<IElement> itemsNotPrices;
+            
             var selMode = 1;
             var items = doc.QuerySelectorAll(sel1);
             if(items.Length == 0)
             {
                 selMode = 2;
                 items = doc.QuerySelectorAll(sel2);
+                
                 if (items.Length == 0)
                 {
                     selMode = 3;
                     items = doc.QuerySelectorAll(sel3);
+
+                    // This selector can turn up price a elements. We want where
+                    // a-price isn't on the child span element, and for good measure,
+                    // where .a-link-normal.a-text-normal are the only two classes.
+                    itemsNotPrices = items.Where(item => {
+                            var itemSpan = item.QuerySelector("span.a-price");
+                            return itemSpan == null && item.ClassList.Length == 2;
+                        });
                 }
+                else
+                {
+                    itemsNotPrices = items;
+                }
+            }
+            else
+            {
+                itemsNotPrices = items;
             }
 
             var results = new List<Tuple<string, string, string>>();
@@ -219,7 +242,7 @@ namespace DScrib2
             var productUrlRegex = new Regex(@"http(s)?://www.amazon.com/([^/]+)/dp/([^/?]+)", RegexOptions.Compiled);
             var productUrlRegex2 = new Regex(@"^/([^/]+)/dp/([^/?]+)", RegexOptions.Compiled);
             var picassoUrlRegex = new Regex(@"^/gp/slredirect/picassoRedirect.html", RegexOptions.Compiled);
-            foreach (var item in items)
+            foreach (var item in itemsNotPrices)
             {
                 var link = item.GetAttribute("href");
 
