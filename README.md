@@ -29,6 +29,8 @@ The `Tests` project is for exercising the code but you have to babysit it right 
 
 ## Mac build and run
 
+You may have to create the database and run Schema.sql to create the schema.
+
 Create a `.envrc` in the root folder and `direnv allow` it. It should have your Google client id:
 
     export GoogleClientId="334348blahblah.apps.googleusercontent.com"
